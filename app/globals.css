@@ -489,3 +489,174 @@
     }
   }
 }
+
+/* ============================================================
+   EDITORIAL BODY — article typography. Shared by the public
+   article page and the admin rich-text editor so the editor is
+   a true preview of what readers will see.
+   ============================================================ */
+@layer components {
+  .editorial-body { font-family: var(--font-sans); }
+  .editorial-body > *:first-child { margin-top: 0; }
+  .editorial-body h2 {
+    font-weight: 700;
+    font-size: 1.75rem;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+    margin-top: 2.75rem;
+    margin-bottom: 1rem;
+    color: var(--on-background);
+  }
+  .editorial-body h3 {
+    font-weight: 700;
+    font-size: 1.375rem;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    margin-top: 2.25rem;
+    margin-bottom: 0.625rem;
+    color: var(--on-background);
+  }
+  .editorial-body h4 {
+    font-weight: 700;
+    font-size: 1.125rem;
+    line-height: 1.35;
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
+    color: var(--on-background);
+  }
+  .editorial-body p {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    color: var(--on-surface);
+    margin-bottom: 1.25rem;
+  }
+  .editorial-body ul, .editorial-body ol {
+    margin: 0 0 1.25rem 0;
+    padding-left: 1.5rem;
+  }
+  .editorial-body ul { list-style: none; }
+  .editorial-body ul li {
+    position: relative;
+    padding-left: 1.25rem;
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    color: var(--on-surface);
+    margin-bottom: 0.5rem;
+  }
+  .editorial-body ul li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0.8rem;
+    width: 5px; height: 5px;
+    border-radius: 2px;
+    background: var(--primary);
+  }
+  .editorial-body ol { list-style: decimal; }
+  .editorial-body ol li {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    color: var(--on-surface);
+    margin-bottom: 0.5rem;
+  }
+  /* The editor wraps list-item text in <p>; keep it tight. */
+  .editorial-body li > p { margin-bottom: 0; }
+  .editorial-body a {
+    color: var(--tertiary);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    text-decoration-color: color-mix(in srgb, var(--tertiary) 40%, transparent);
+    transition: color 150ms ease, text-decoration-color 150ms ease;
+  }
+  .editorial-body a:hover {
+    color: var(--tertiary-hover);
+    text-decoration-color: var(--tertiary);
+  }
+  .editorial-body blockquote {
+    margin: 1.75rem 0;
+    padding-left: 1.25rem;
+    border-left: 3px solid var(--primary);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--on-background);
+  }
+  .editorial-body blockquote p {
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+    margin-bottom: 0.5rem;
+  }
+  .editorial-body code {
+    font-family: var(--font-mono), monospace;
+    font-size: 0.875em;
+    background: var(--surface-container);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    color: var(--primary);
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  .editorial-body pre {
+    background: var(--surface-container);
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin-bottom: 1.25rem;
+    font-size: 0.875rem;
+  }
+  .editorial-body pre code {
+    background: transparent;
+    padding: 0;
+    color: var(--on-surface);
+  }
+  .editorial-body img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 2rem auto;
+    border-radius: 12px;
+  }
+  .editorial-body figure { margin: 2rem 0; }
+  .editorial-body figure img { margin: 0 auto; }
+  .editorial-body figcaption {
+    margin-top: 0.625rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--on-surface-muted);
+  }
+  .editorial-body hr {
+    margin: 2.5rem auto;
+    width: 3rem;
+    border: 0;
+    border-top: 2px solid var(--primary);
+  }
+  .editorial-body table {
+    width: 100%;
+    margin-bottom: 1.25rem;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+  .editorial-body th, .editorial-body td {
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--outline-variant);
+  }
+  .editorial-body th { font-weight: 700; color: var(--on-background); }
+
+  /* ---- Admin rich-text editor (TipTap / ProseMirror) ---- */
+  .rich-editor .ProseMirror { min-height: 24rem; outline: none; }
+  .rich-editor .ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+    color: var(--on-surface-muted);
+  }
+  .rich-editor .ProseMirror img.ProseMirror-selectednode {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+  }
+}

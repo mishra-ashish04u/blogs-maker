@@ -6,8 +6,9 @@ import { PageHeader } from '@/components/page-header';
 import { getAllPosts, type BlogPost } from '@/lib/blog-data';
 
 export const metadata = {
-  title: 'Archives | Infocus-IT',
-  description: 'The complete Infocus-IT archive — every editorial we have published, organized by date.',
+  title: 'Archive',
+  description: 'Every scam alert and safety guide we have published, organised by month.',
+  alternates: { canonical: '/archives' },
 };
 
 export const revalidate = 300;
@@ -40,7 +41,6 @@ export default async function ArchivesPage() {
   const grouped = groupByYearMonth(blogPosts);
   const totalEditorials = blogPosts.length;
   const totalCategories = new Set(blogPosts.map((p) => p.category)).size;
-  const totalAuthors = new Set(blogPosts.map((p) => p.author)).size;
 
   return (
     <div className="min-h-screen bg-surface">
@@ -48,10 +48,10 @@ export default async function ArchivesPage() {
       <main id="main">
 
       <PageHeader
-        kicker="The Archive Project"
-        title="Every editorial, remastered"
-        accent="for the cyber mind."
-        subtitle="A complete index of our published work — browse the full catalog or jump to a specific month."
+        kicker="Archive"
+        title="Every alert and guide,"
+        accent="in one place."
+        subtitle="A complete index of everything we have published — browse by month to find an older warning."
       />
 
       {/* Stats */}
@@ -59,9 +59,9 @@ export default async function ArchivesPage() {
         <div className="mx-auto max-w-7xl">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {[
-              { label: 'Editorials Published', value: totalEditorials, emphasis: true },
-              { label: 'Subject Categories', value: totalCategories },
-              { label: 'Contributing Authors', value: totalAuthors },
+              { label: 'Articles Published', value: totalEditorials, emphasis: true },
+              { label: 'Topics Covered', value: totalCategories },
+              { label: 'Months of Alerts', value: grouped.length },
             ].map((stat) => (
               <div
                 key={stat.label}
@@ -99,7 +99,7 @@ export default async function ArchivesPage() {
                   {group.label}
                 </h2>
                 <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-on-surface-muted">
-                  {group.items.length} editorial{group.items.length === 1 ? '' : 's'}
+                  {group.items.length} article{group.items.length === 1 ? '' : 's'}
                 </span>
               </header>
 

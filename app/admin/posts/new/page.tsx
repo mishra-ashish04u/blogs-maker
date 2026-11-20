@@ -13,7 +13,7 @@ export default function AdminNewPostPage() {
           </p>
         </div>
         <h1 className="mt-4 text-4xl font-extrabold tracking-[-0.03em] text-on-bg md:text-[3rem]">
-          New Editorial.
+          New Post.
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-on-surface-variant">
           Fill in the metadata and body, then publish — or save as a draft to come back to later.

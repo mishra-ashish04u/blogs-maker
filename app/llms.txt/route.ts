@@ -1,5 +1,6 @@
 import { getAllPosts } from '@/lib/blog-data';
 import { SITE, absoluteUrl, siteUrl } from '@/lib/seo';
+import { CATEGORIES } from '@/lib/site';
 
 export const revalidate = 600;
 export const runtime = 'nodejs';
@@ -30,25 +31,25 @@ export async function GET() {
 
 Base URL: ${base}
 Language: en-US
-License: editorial content © ${SITE.name}. Quotation with attribution permitted.
+License: content © ${SITE.name}. Quotation with attribution permitted.
 `;
 
   const siteFacts = section('About', [
-    `- **Publication:** ${SITE.name}`,
-    `- **Byline:** All editorials are published under the "${SITE.author}" byline — a single team byline, not individual authors. Our pipeline drafts from primary sources and applies an editor-pass before publication.`,
-    `- **Cadence:** Daily, 06:00 UTC.`,
-    `- **Audience:** SOC analysts, detection engineers, incident responders, and security researchers.`,
-    `- **Voice:** Practitioner-first, defender-oriented, no vendor marketing.`,
-    `- **Sources:** Each editorial is grounded in a primary source article (BleepingComputer, The Hacker News, Krebs on Security, Dark Reading). We do not fabricate CVE numbers, version numbers, or victim names. When specifics appear, they came from the cited source.`,
+    `- **Publication:** ${SITE.name} — scam alerts and online-safety guides for everyday people.`,
+    `- **Byline:** Articles are published under the "${SITE.author}" byline. Some are drafted with AI assistance; every article is checked and edited by a person before publication.`,
+    `- **Audience:** Non-technical readers, families and older adults who want to recognise and avoid scams.`,
+    `- **Sources:** Official warnings from consumer-protection agencies, police and banks, statements from impersonated companies, trusted news reporting, and reader scam reports. We do not invent victims, quotes or statistics.`,
+    `- **Scope:** General information, not legal or financial advice.`,
   ]);
 
   const coreLinks = section('Core Links', [
-    `- [Home](${base}): Today's dispatch and the must-read list.`,
-    `- [Topics](${absoluteUrl('/curation')}): Editorials grouped by Security Research, Threats, How-To, Compliance.`,
-    `- [Analysis](${absoluteUrl('/perspectives')}): Long-form essays and opinion pieces.`,
-    `- [Archive](${absoluteUrl('/archives')}): Full post index by month.`,
-    `- [About](${absoluteUrl('/about')}): How we publish.`,
-    `- [RSS feed](${absoluteUrl('/feed.xml')}): Full-text RSS of every editorial.`,
+    `- [Home](${base}): Today's scam alerts.`,
+    `- [Topics](${absoluteUrl('/curation')}): Articles grouped by ${CATEGORIES.join(', ')}.`,
+    `- [Deep Dives](${absoluteUrl('/perspectives')}): In-depth explainers on how major scams work.`,
+    `- [Archive](${absoluteUrl('/archives')}): Full article index by month.`,
+    `- [Report a Scam](${absoluteUrl('/submit-tip')}): How readers send us scam examples.`,
+    `- [Editorial Policy](${absoluteUrl('/ethics')}): How we research, write and correct articles.`,
+    `- [RSS feed](${absoluteUrl('/feed.xml')}): Full-text RSS of every article.`,
     `- [Sitemap](${absoluteUrl('/sitemap.xml')}): Machine-readable site index.`,
   ]);
 
@@ -59,10 +60,10 @@ License: editorial content © ${SITE.name}. Quotation with attribution permitted
     return `- [${p.title}](${url}) — ${p.category} · ${p.readTime} min · ${p.date}. ${p.excerpt}`;
   });
 
-  const recentSection = section('Recent Editorials', recent.length ? recent : ['- (No posts yet.)']);
+  const recentSection = section('Recent Articles', recent.length ? recent : ['- (No posts yet.)']);
 
   const guidance = section('Citation Guidance', [
-    `When quoting or summarising an editorial from this site, please cite the canonical URL of the post and attribute to "${SITE.author}". Prefer the most recent version — all posts have ISO publish + modified timestamps in their Article JSON-LD.`,
+    `When quoting or summarising an article from this site, please cite the canonical URL of the post and attribute to "${SITE.author}". Prefer the most recent version — all posts have ISO publish + modified timestamps in their Article JSON-LD.`,
   ]);
 
   const body = [intro, siteFacts, coreLinks, recentSection, guidance].join('\n');

@@ -1,93 +1,97 @@
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { PageHeader } from '@/components/page-header';
-import { ShieldCheck, Mail, Lock, FileWarning } from 'lucide-react';
+import { Camera, Mail, ShieldAlert, EyeOff } from 'lucide-react';
+import { SITE } from '@/lib/site';
 
 export const metadata = {
-  title: 'Submit a Tip | Infocus-IT',
-  description:
-    'How to send the Infocus-IT newsroom a confidential tip, vulnerability disclosure, or breach report — including encrypted and anonymous options.',
+  title: 'Report a Scam',
+  description: `Send ${SITE.name} a scam text, call, email or website so we can warn others — and find out what to do if you have already lost money.`,
   alternates: { canonical: '/submit-tip' },
 };
 
 const guidelines = [
   {
-    icon: FileWarning,
-    title: 'What we want',
-    body: 'Breach reports, vulnerability disclosures, leaked data samples (with redactions), insider accounts of security failures, CVE pre-disclosures you think should be public, and primary-source documents.',
+    icon: Camera,
+    title: 'What to send',
+    body: 'A screenshot of the message or website, the sender’s number or email address, the date you received it, and a sentence on what it asked you to do.',
   },
   {
-    icon: ShieldCheck,
-    title: 'What we verify',
-    body: 'We corroborate every tip against vendor advisories, telemetry, or a second source before publishing. Unverifiable tips still inform our coverage — we just won\u2019t attribute claims to an anonymous single source.',
+    icon: EyeOff,
+    title: 'Hide your own details',
+    body: 'Cover your name, phone number, address and any account or card numbers before sending screenshots. Never send passwords or one-time codes.',
   },
   {
-    icon: Lock,
-    title: 'How we protect sources',
-    body: 'We do not log IP addresses for tip submissions, do not store email contents beyond the active investigation, and will refuse to confirm or deny any source relationship. Requests for legal protection are taken seriously.',
+    icon: ShieldAlert,
+    title: 'What happens next',
+    body: 'We check reports against official warnings. If a scam is new or spreading, we publish an alert. We never publish your name or contact details.',
   },
 ];
 
-export default function SubmitTipPage() {
+export default function ReportScamPage() {
   return (
     <div className="min-h-screen bg-surface">
       <Navbar />
       <main id="main">
         <PageHeader
-          kicker="Submit a Tip"
-          title="Send the newsroom a"
-          accent="confidential tip."
-          subtitle="Tips drive our best work. Here is how to send one in a way that protects you and helps us move quickly."
+          kicker="Report a Scam"
+          title="Help us warn"
+          accent="everyone else."
+          subtitle="Received a suspicious text, call, email or website? Send it to us. Your report helps the next person recognise it in time."
         />
 
-        {/* Channels */}
+        {/* Lost money first */}
+        <section className="px-6 pt-14">
+          <div className="mx-auto max-w-7xl">
+            <div className="rounded-2xl border border-error/30 bg-error/5 p-6 md:p-8">
+              <p className="label-overline text-error">Already lost money or shared details?</p>
+              <ol className="mt-4 list-decimal space-y-2 pl-5 text-[15px] leading-relaxed text-on-surface-variant">
+                <li>
+                  <strong className="text-on-bg">Call your bank or card provider now</strong> using
+                  the number on the back of your card. Fast action gives the best chance of
+                  stopping a payment.
+                </li>
+                <li>
+                  <strong className="text-on-bg">Change passwords</strong> for any account you
+                  entered on the scam site, starting with your email.
+                </li>
+                <li>
+                  <strong className="text-on-bg">Report it</strong> to your local police or
+                  national fraud-reporting service.
+                </li>
+              </ol>
+              <p className="mt-4 text-[13px] text-on-surface-muted">
+                We are an information site and cannot recover money. Be wary of anyone who
+                contacts you offering to get your money back for a fee.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Channel */}
         <section className="px-6 py-14">
           <div className="mx-auto max-w-7xl">
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              <div className="rounded-xl border border-outline-variant bg-surface-lowest p-8">
-                <Mail className="h-6 w-6 text-primary" aria-hidden="true" />
-                <h2 className="mt-4 text-xl font-bold tracking-[-0.015em] text-on-bg">
-                  Email (preferred)
-                </h2>
-                <p className="mt-3 text-[14px] leading-relaxed text-on-surface-variant">
-                  For most tips, plain email is fine. Include as much detail as you\u2019re comfortable with:
-                  what you saw, when, how you came across it, and any supporting artefacts.
-                </p>
-                <a
-                  href="mailto:tips@infocusit.in"
-                  className="mt-5 inline-block break-all text-lg font-semibold text-on-bg hover:text-primary"
-                >
-                  tips@infocusit.in
-                </a>
-              </div>
-
-              <div className="rounded-xl border border-outline-variant bg-surface-lowest p-8">
-                <Lock className="h-6 w-6 text-tertiary" aria-hidden="true" />
-                <h2 className="mt-4 text-xl font-bold tracking-[-0.015em] text-on-bg">
-                  Encrypted &amp; anonymous
-                </h2>
-                <p className="mt-3 text-[14px] leading-relaxed text-on-surface-variant">
-                  If the subject is sensitive, send from a throwaway ProtonMail or Tuta address, or
-                  ask us for our Signal number in an initial message from any address. Do NOT send
-                  source material from a corporate device or network.
-                </p>
-                <p className="mt-5 text-[13px] text-on-surface-muted">
-                  Signal / PGP details shared on request from{' '}
-                  <a
-                    href="mailto:tips@infocusit.in"
-                    className="text-tertiary underline-offset-2 hover:underline"
-                  >
-                    tips@infocusit.in
-                  </a>
-                  .
-                </p>
-              </div>
+            <div className="rounded-xl border border-outline-variant bg-surface-lowest p-8">
+              <Mail className="h-6 w-6 text-primary" aria-hidden="true" />
+              <h2 className="mt-4 text-xl font-bold tracking-[-0.015em] text-on-bg">
+                Email your report
+              </h2>
+              <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-on-surface-variant">
+                Forward the suspicious email, or attach screenshots of texts, chats or websites.
+                Do not click any links in the message to collect more information.
+              </p>
+              <a
+                href={`mailto:${SITE.email.reports}?subject=${encodeURIComponent('Scam report')}`}
+                className="mt-5 inline-block break-all text-lg font-semibold text-on-bg hover:text-primary"
+              >
+                {SITE.email.reports}
+              </a>
             </div>
           </div>
         </section>
 
         {/* Guidelines */}
-        <section className="px-6 pb-16">
+        <section className="px-6 pb-24">
           <div className="mx-auto max-w-7xl">
             <header className="mb-8">
               <h2 className="accent-bar text-2xl font-bold text-on-bg">Before you send</h2>
@@ -105,36 +109,10 @@ export default function SubmitTipPage() {
                     <h3 className="mt-3 text-base font-bold tracking-[-0.015em] text-on-bg">
                       {g.title}
                     </h3>
-                    <p className="mt-2 text-[13px] leading-relaxed text-on-surface-variant">
-                      {g.body}
-                    </p>
+                    <p className="mt-2 text-[13px] leading-relaxed text-on-surface-variant">{g.body}</p>
                   </div>
                 );
               })}
-            </div>
-          </div>
-        </section>
-
-        {/* Important — legal + operational notes */}
-        <section className="px-6 pb-24">
-          <div className="mx-auto max-w-7xl">
-            <div className="rounded-2xl border border-tertiary/30 bg-tertiary-container/50 p-8 md:p-10">
-              <p className="label-overline">Important</p>
-              <ul className="mt-4 space-y-3 text-[14px] leading-relaxed text-on-surface-variant">
-                <li>
-                  Do not break the law to obtain documents. We cannot publish material you had no
-                  lawful right to access, and we will not put sources in legal jeopardy.
-                </li>
-                <li>
-                  Do not send unsolicited personal data of third parties. Redact names, phone
-                  numbers, and identifiers before sending anything we might republish.
-                </li>
-                <li>
-                  If you&rsquo;re reporting an active vulnerability in a specific product, please
-                  tell us whether you&rsquo;ve already contacted the vendor. We default to
-                  coordinated disclosure unless a public-interest case overrides that.
-                </li>
-              </ul>
             </div>
           </div>
         </section>

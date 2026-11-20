@@ -1,15 +1,11 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { ADMIN_COOKIE, assertSameOrigin, verifyAdminToken } from '@/lib/admin-auth';
+import { isEmptyHtml, sanitizePostHtml } from '@/lib/html-sanitize';
 
-export const CATEGORIES = [
-  'Security Research',
-  'Threats',
-  'How-To',
-  'Compliance',
-] as const;
+import { CATEGORIES, type Category } from '@/lib/site';
 
-export type Category = (typeof CATEGORIES)[number];
+export { CATEGORIES, type Category };
 
 export interface PostInput {
   title: string;
@@ -83,9 +79,15 @@ export function validatePostInput(raw: unknown): ValidationResult<PostInput> {
 
   const coverImage = typeof b.coverImage === 'string' ? b.coverImage.trim() : '';
   if (!coverImage) return { ok: false, error: 'Cover image URL is required' };
+  // Site-relative paths (/images/…) or absolute http(s) URLs only.
+  if (!/^(https?:\/\/|\/(?!\/))/i.test(coverImage)) {
+    return { ok: false, error: 'Cover image must be an http(s) URL or a /path on this site' };
+  }
 
-  const content = typeof b.content === 'string' ? b.content : '';
-  if (!content.trim()) return { ok: false, error: 'Content is required' };
+  const rawContent = typeof b.content === 'string' ? b.content : '';
+  if (rawContent.length > 500_000) return { ok: false, error: 'Content is too long' };
+  const content = sanitizePostHtml(rawContent);
+  if (isEmptyHtml(content)) return { ok: false, error: 'Content is required' };
 
   const rawSlug = typeof b.slug === 'string' ? b.slug.trim() : '';
   const slug = rawSlug ? slugify(rawSlug) : slugify(title);

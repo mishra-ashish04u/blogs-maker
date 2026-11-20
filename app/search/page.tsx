@@ -8,8 +8,9 @@ import { getAllPosts } from '@/lib/blog-data';
 export const revalidate = 60;
 
 export const metadata = {
-  title: 'Search | Infocus-IT',
-  description: 'Search editorials, authors, and topics across the Infocus-IT journal.',
+  title: 'Search',
+  description: 'Search scam alerts and safety guides by keyword or topic.',
+  robots: { index: false, follow: true },
 };
 
 export default async function SearchPage({
@@ -35,12 +36,12 @@ export default async function SearchPage({
 
       <PageHeader
         kicker={query ? `Results for "${query}"` : 'Search'}
-        title={query ? `${results.length} editorial${results.length === 1 ? '' : 's'}` : 'Find editorials by'}
-        accent={query ? 'in the archive.' : 'title, author, or topic.'}
+        title={query ? `${results.length} article${results.length === 1 ? '' : 's'}` : 'Search for a scam by'}
+        accent={query ? 'found.' : 'name or keyword.'}
         subtitle={
           query
             ? undefined
-            : 'Use the search icon in the navbar. Queries match titles, excerpts, authors, and categories.'
+            : 'Try words from the message you received — e.g. “parcel”, “bank”, “crypto” or “job offer”. Use the search icon in the menu.'
         }
       />
 

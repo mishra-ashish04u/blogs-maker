@@ -3,8 +3,8 @@
  *
  * Unlike the daily pipeline (RSS → LLM → image), this script takes one or
  * more raw topics as CLI arguments and produces one evergreen editorial
- * per topic. Useful for seeding the archive with canonical explainer
- * pieces that aren't tied to a news event ("Phishing", "ISO 27001", etc.).
+ * per topic. Useful for seeding the archive with evergreen guides that
+ * aren't tied to a news event ("Romance scams", "Fake job offers", etc.).
  *
  * Skipped vs. the daily pipeline:
  *   - RSS picker (no external trigger needed)
@@ -12,7 +12,7 @@
  *   - Newsletter dispatch (bulk topic generation would spam subscribers)
  *
  * Run:
- *   npm run generate:topic -- "Phishing" "Hackers and types" "ISO 27001"
+ *   npm run generate:topic -- "Romance scams" "Fake job offers" "Tech support scams"
  */
 
 import { config } from 'dotenv';
@@ -20,6 +20,8 @@ config({ path: '.env.local' });
 config();
 
 import { getSupabaseAdmin } from '../lib/supabase/admin';
+import { sanitizePostHtml } from '../lib/html-sanitize';
+import { SITE } from '../lib/site';
 import { generateEditorial } from './lib/llm';
 import { generateAndUploadCover } from './lib/cover';
 import type { Headline } from './lib/rss';
@@ -42,12 +44,12 @@ function topicToHeadline(topic: string): Headline {
   return {
     title: topic,
     link: '',
-    source: 'Infocus-IT editorial desk',
+    source: `${SITE.name} guides`,
     contentSnippet:
-      `Evergreen explainer on: ${topic}. No specific news incident triggers this piece — ` +
-      `write a definitive editorial with a clear thesis, practitioner-level specifics, ` +
-      `and a defender takeaway. Speak in general terms about real controls and frameworks; ` +
-      `do NOT fabricate CVEs or victim names.`,
+      `Evergreen guide on: ${topic}. No specific news incident triggers this piece — ` +
+      `explain how this scam or safety topic works in general, how to recognise it, how to ` +
+      `protect yourself, and what to do if you have been caught out. Keep it general; ` +
+      `do NOT invent statistics, victims, quotes, phone numbers or websites.`,
   };
 }
 
@@ -101,7 +103,8 @@ async function generateOne(topic: string): Promise<{ slug?: string; error?: stri
         date: formatDate(),
         read_time: editorial.readTime,
         cover_image: coverUrl,
-        content: editorial.content,
+        // LLM output is never trusted as HTML.
+        content: sanitizePostHtml(editorial.content),
         status: 'published',
         source_url: null,
       })

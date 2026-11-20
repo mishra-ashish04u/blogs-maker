@@ -70,14 +70,14 @@ export function NewsletterBlock({ source = 'article-end' }: Props) {
         <div>
           <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80">
             <Mail className="h-3.5 w-3.5" aria-hidden="true" />
-            The Weekly Brief
+            Free scam alerts
           </p>
           <h3 className="mt-3 max-w-xl text-2xl font-bold leading-tight tracking-[-0.02em] text-white md:text-[1.75rem]">
-            Liked this editorial? Get the next one in your inbox.
+            Get warned about the next scam before it reaches you.
           </h3>
           <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-white/85">
-            One email every morning when we publish. No vendor marketing, no
-            spam, unsubscribe in one click.
+            One short email when a new scam is spreading. No spam, unsubscribe
+            in one click.
           </p>
           {state.kind === 'error' && (
             <p

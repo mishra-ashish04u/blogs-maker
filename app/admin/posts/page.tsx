@@ -1,9 +1,8 @@
 import Link from 'next/link';
-import { cookies } from 'next/headers';
 import { Plus, ArrowUpRight, PenLine, Eye, Search } from 'lucide-react';
-import { createClient } from '@/utils/supabase/server';
+import { getSupabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase/admin';
 import { getAllPosts, type BlogPost } from '@/lib/blog-data';
-import { isSupabaseConfigured, type PostRow } from '@/lib/supabase/types';
+import type { PostRow } from '@/lib/supabase/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,11 +10,12 @@ type Status = 'all' | 'published' | 'draft' | 'retired';
 type AdminPost = BlogPost & { status: 'draft' | 'published' | 'retired' };
 
 async function fetchAllAdminPosts(): Promise<AdminPost[]> {
-  if (!isSupabaseConfigured()) {
+  if (!isSupabaseAdminConfigured()) {
     const fallback = await getAllPosts();
     return fallback.map((p) => ({ ...p, status: 'published' }));
   }
-  const supabase = createClient(await cookies());
+  // Service role: RLS hides drafts/retired rows from the public key.
+  const supabase = getSupabaseAdmin();
   const { data } = await supabase
     .from('posts')
     .select('*')
@@ -39,10 +39,10 @@ async function fetchAllAdminPosts(): Promise<AdminPost[]> {
 }
 
 const CATEGORY_TONE: Record<AdminPost['category'], string> = {
-  'Security Research': 'bg-tertiary-container text-tertiary',
-  'Threats':           'bg-error/10 text-error',
-  'How-To':            'bg-primary-container/15 text-primary',
-  'Compliance':        'bg-success/12 text-success',
+  'Scam Alerts':       'bg-error/10 text-error',
+  'Protection Guides': 'bg-primary-container/15 text-primary',
+  'Account Recovery':  'bg-tertiary-container text-tertiary',
+  'Security Tools':    'bg-success/12 text-success',
 };
 
 function StatusPill({ status }: { status: AdminPost['status'] }) {

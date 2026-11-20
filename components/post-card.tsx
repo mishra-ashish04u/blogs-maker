@@ -4,15 +4,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { BlogPost } from '@/lib/blog-data';
 
-// Differentiated per-category tone so readers can scan by category colour
-// instead of reading every pill. Blue = research (neutral / analytical),
-// red = threats (urgent), orange = how-to (practitioner guide),
-// green = compliance (policy / safe).
+// Per-category tone so readers can scan by colour: red = active scam
+// (urgent), orange = how-to guide, blue = recovery help, green = tools.
 const categoryTone: Record<BlogPost['category'], string> = {
-  'Security Research': 'bg-tertiary-container text-tertiary',
-  'Threats':           'bg-error/10 text-error',
-  'How-To':            'bg-primary-container/15 text-primary',
-  'Compliance':        'bg-success/12 text-success',
+  'Scam Alerts':       'bg-error/10 text-error',
+  'Protection Guides': 'bg-primary-container/15 text-primary',
+  'Account Recovery':  'bg-tertiary-container text-tertiary',
+  'Security Tools':    'bg-success/12 text-success',
 };
 
 export function PostCard({ post }: { post: BlogPost }) {

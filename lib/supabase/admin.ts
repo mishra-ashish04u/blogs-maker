@@ -2,6 +2,14 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 let cached: SupabaseClient | null = null;
 
+/** True when the service-role client can be created (URL + service key present). */
+export function isSupabaseAdminConfigured(): boolean {
+  return Boolean(
+    (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL) &&
+      process.env.SUPABASE_SERVICE_ROLE_KEY,
+  );
+}
+
 /**
  * Service-role client for scripts and server-only write paths.
  * Never import this from a Client Component.

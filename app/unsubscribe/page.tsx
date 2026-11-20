@@ -3,10 +3,11 @@ import { CheckCircle2, AlertTriangle } from 'lucide-react';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { unsubscribeByToken } from '@/lib/newsletter';
+import { SITE } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 export const metadata = {
-  title: 'Unsubscribed | Infocus-IT',
+  title: 'Unsubscribe',
   robots: { index: false, follow: false },
 };
 
@@ -42,8 +43,8 @@ export default async function UnsubscribePage({
               </h1>
               <p className="mt-4 text-[15px] leading-relaxed text-on-surface-variant">
                 {result.email
-                  ? `We won't send The Weekly Brief to ${result.email} anymore.`
-                  : "We won't send you The Weekly Brief anymore."}
+                  ? `We won't send ${SITE.newsletterName} to ${result.email} anymore.`
+                  : `We won't send you ${SITE.newsletterName} anymore.`}
                 {' '}You can re-subscribe any time from the site.
               </p>
             </>
@@ -57,8 +58,8 @@ export default async function UnsubscribePage({
               </h1>
               <p className="mt-4 text-[15px] leading-relaxed text-on-surface-variant">
                 {result.error ?? 'The unsubscribe link is invalid or expired.'}{' '}
-                If you want to stop receiving The Weekly Brief, reply to any of
-                our emails and we&rsquo;ll remove you manually.
+                If you want to stop receiving {SITE.newsletterName}, reply to any
+                of our emails and we&rsquo;ll remove you manually.
               </p>
             </>
           )}
@@ -67,7 +68,7 @@ export default async function UnsubscribePage({
               href="/"
               className="cta-primary inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-[12px] uppercase tracking-[0.14em]"
             >
-              Back to Infocus-IT
+              Back to {SITE.name}
             </Link>
           </div>
         </div>

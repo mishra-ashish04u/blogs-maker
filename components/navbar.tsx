@@ -6,17 +6,14 @@ import { Search, Menu, X, ArrowRight } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { SearchCommand } from '@/components/search-command';
 import { useEffect, useState } from 'react';
+import { SITE } from '@/lib/site';
 
-/**
- * Clearer, more confident labels than the previous editorial jargon.
- * "Insights/Curation/Perspectives" → shorter, sharper signposts.
- */
 const navItems = [
-  { label: 'Latest',   href: '/',             desc: "Today's dispatch" },
-  { label: 'Topics',   href: '/curation',     desc: 'Browse by category' },
-  { label: 'Analysis', href: '/perspectives', desc: 'Long-form essays' },
+  { label: 'Latest',        href: '/',             desc: "Today's scam alerts" },
+  { label: 'Topics',        href: '/curation',     desc: 'Browse by category' },
+  { label: 'Deep Dives',    href: '/perspectives', desc: 'How the big scams really work' },
   { label: 'Archive',  href: '/archives',     desc: 'Everything we\u2019ve published' },
-  { label: 'About',    href: '/about',        desc: 'Mission & masthead' },
+  { label: 'Report a Scam', href: '/submit-tip',   desc: 'Warn others about a scam' },
 ];
 
 export function Navbar() {
@@ -81,16 +78,17 @@ export function Navbar() {
           <Link
             href="/"
             className="flex items-center gap-2 focus:outline-none"
-            aria-label="Infocus-IT home"
+            aria-label={`${SITE.name} home`}
           >
             <span
               aria-hidden="true"
               className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-primary text-[11px] font-bold text-white"
             >
-              iF
+              {SITE.monogram}
             </span>
             <span className="text-[17px] font-bold tracking-[-0.02em] text-on-bg">
-              Infocus-<span className="text-primary">IT</span>
+              {SITE.wordmark.lead}
+              <span className="text-primary">{SITE.wordmark.accent}</span>
             </span>
           </Link>
 

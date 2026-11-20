@@ -169,7 +169,7 @@ export function SearchCommand({ open, onClose }: Props) {
         <div className="flex items-center gap-3 border-b border-outline-variant px-4">
           <Search className="h-4 w-4 text-on-surface-muted" aria-hidden="true" />
           <label htmlFor="cmdk-input" className="sr-only">
-            Search editorials
+            Search articles
           </label>
           <input
             id="cmdk-input"
@@ -177,7 +177,7 @@ export function SearchCommand({ open, onClose }: Props) {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search editorials, authors, topics…"
+            placeholder="Search scams, e.g. “parcel text” or “bank call”…"
             className="flex-1 bg-transparent py-3.5 text-[15px] text-on-bg placeholder:text-on-surface-muted focus:outline-none"
             autoComplete="off"
           />
@@ -198,20 +198,20 @@ export function SearchCommand({ open, onClose }: Props) {
 
           {!loading && shown.length === 0 && query && (
             <p className="px-4 py-6 text-sm text-on-surface-muted">
-              No editorials matched &ldquo;{query}&rdquo;.
+              No articles matched &ldquo;{query}&rdquo;.
             </p>
           )}
 
           {!loading && shown.length === 0 && !query && (
             <p className="px-4 py-6 text-sm text-on-surface-muted">
-              Start typing to search editorials, authors, or topics.
+              Start typing to search scam alerts and guides.
             </p>
           )}
 
           {shown.length > 0 && (
             <>
               <p className="px-3 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-on-surface-muted">
-                {query ? `${shown.length} result${shown.length === 1 ? '' : 's'}` : 'Recent editorials'}
+                {query ? `${shown.length} result${shown.length === 1 ? '' : 's'}` : 'Recent articles'}
               </p>
               <ul role="listbox" aria-label="Search results">
                 {shown.map((post, i) => (

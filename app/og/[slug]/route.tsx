@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { getPost } from '@/lib/blog-data';
-import { SITE } from '@/lib/seo';
+import { SITE, type Category } from '@/lib/site';
 
 export const runtime = 'nodejs';
 
@@ -19,11 +19,11 @@ const COLORS = {
   surfaceLow: '#f8fafc',
 };
 
-const CATEGORY_TONE: Record<string, string> = {
-  'Security Research': COLORS.tertiary,
-  'Threats': '#dc2626',
-  'How-To': COLORS.primary,
-  'Compliance': '#16a34a',
+const CATEGORY_TONE: Record<Category, string> = {
+  'Scam Alerts': '#dc2626',
+  'Protection Guides': COLORS.primary,
+  'Account Recovery': COLORS.tertiary,
+  'Security Tools': '#16a34a',
 };
 
 /**
@@ -46,7 +46,7 @@ export async function GET(
   const title = post?.title ?? SITE.name;
   const category = post?.category ?? 'Editorial';
   const readTime = post?.readTime ? `${post.readTime} min read` : '';
-  const categoryColor = CATEGORY_TONE[category] ?? COLORS.primary;
+  const categoryColor = CATEGORY_TONE[category as Category] ?? COLORS.primary;
 
   return new ImageResponse(
     (
@@ -85,17 +85,19 @@ export async function GET(
               letterSpacing: -0.5,
             }}
           >
-            iF
+            {SITE.monogram}
           </div>
           <div
             style={{
+              display: 'flex',
               fontSize: 26,
               fontWeight: 800,
               color: COLORS.ink,
               letterSpacing: -0.5,
             }}
           >
-            Infocus-<span style={{ color: COLORS.primary }}>IT</span>
+            {SITE.wordmark.lead}
+            <span style={{ color: COLORS.primary, marginLeft: 6 }}>{SITE.wordmark.accent}</span>
           </div>
           <div
             style={{
@@ -141,7 +143,7 @@ export async function GET(
                 color: COLORS.muted,
               }}
             >
-              · {readTime}
+              {`· ${readTime}`}
             </div>
           )}
         </div>
@@ -191,10 +193,10 @@ export async function GET(
               color: COLORS.ink,
             }}
           >
-            infocusit.com
+            {SITE.domain}
           </div>
           <div style={{ marginLeft: 'auto', color: COLORS.muted, fontSize: 18 }}>
-            {post?.author ?? 'Infocus-IT Team'}
+            {post?.author ?? SITE.author}
           </div>
         </div>
       </div>

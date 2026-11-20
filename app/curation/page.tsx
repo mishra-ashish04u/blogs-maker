@@ -4,15 +4,18 @@ import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { PageHeader } from '@/components/page-header';
 import { getAllPosts } from '@/lib/blog-data';
+import { CATEGORIES, CATEGORY_INFO, categorySlug } from '@/lib/site';
 
 export const metadata = {
-  title: 'Curation | Infocus-IT',
-  description: 'Hand-picked cybersecurity editorials, curated for the security analyst.',
+  title: 'Topics',
+  description:
+    'Browse scam alerts, protection guides, account-recovery help and security tool reviews, organised by topic.',
+  alternates: { canonical: '/curation' },
 };
 
 export const revalidate = 300;
 
-const categories = ['Security Research', 'Threats', 'How-To', 'Compliance'] as const;
+const categories = CATEGORIES;
 
 export default async function CurationPage() {
   const blogPosts = await getAllPosts();
@@ -28,10 +31,10 @@ export default async function CurationPage() {
       <main id="main">
 
       <PageHeader
-        kicker="Curated Collections"
-        title="Hand-picked editorials for the"
-        accent="discerning analyst."
-        subtitle="Thematic selections drawn from our archive — organized by the questions our readers return to most."
+        kicker="Topics"
+        title="Find the help"
+        accent="you need."
+        subtitle="Every alert and guide, grouped by what you are trying to do — recognise a scam, protect yourself, recover an account, or choose the right tool."
       />
 
       {/* Editor's Pick */}
@@ -39,7 +42,7 @@ export default async function CurationPage() {
         <div className="mx-auto max-w-7xl">
           <header className="mb-10 flex items-end justify-between">
             <h2 className="accent-bar font-playfair text-2xl font-semibold text-on-bg">
-              Editor&rsquo;s Pick
+              Start here
             </h2>
           </header>
 
@@ -72,13 +75,22 @@ export default async function CurationPage() {
       {/* Category sections */}
       {byCategory.map((group, gi) =>
         group.posts.length === 0 ? null : (
-          <section key={group.category} className="px-6 py-10">
+          <section
+            key={group.category}
+            id={categorySlug(group.category)}
+            className="scroll-mt-6 px-6 py-10"
+          >
             <div className="mx-auto max-w-7xl">
-              <header className="mb-8 flex items-end justify-between">
-                <h2 className="accent-bar font-playfair text-xl font-semibold text-on-bg">
-                  <span className="text-gradient-signature">{String(gi + 1).padStart(2, '0')}</span>{' '}
-                  <span className="mx-2 text-on-surface-muted">·</span> {group.category}
-                </h2>
+              <header className="mb-8 flex items-end justify-between gap-6">
+                <div>
+                  <h2 className="accent-bar font-playfair text-xl font-semibold text-on-bg">
+                    <span className="text-gradient-signature">{String(gi + 1).padStart(2, '0')}</span>{' '}
+                    <span className="mx-2 text-on-surface-muted">·</span> {group.category}
+                  </h2>
+                  <p className="mt-2 max-w-2xl text-sm text-on-surface-variant">
+                    {CATEGORY_INFO[group.category].description}
+                  </p>
+                </div>
                 <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-on-surface-muted">
                   {group.posts.length} piece{group.posts.length === 1 ? '' : 's'}
                 </span>

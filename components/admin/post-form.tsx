@@ -5,14 +5,17 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle,
   CheckCircle2,
+  ImageUp,
   Loader2,
   Save,
   Send,
   Trash2,
+  X,
 } from 'lucide-react';
+import { RichTextEditor } from '@/components/admin/rich-text-editor';
+import { ACCEPTED_IMAGE_TYPES, uploadImage } from '@/lib/admin-upload';
 
-const CATEGORIES = ['Security Research', 'Threats', 'How-To', 'Compliance'] as const;
-type Category = (typeof CATEGORIES)[number];
+import { CATEGORIES, SITE, type Category } from '@/lib/site';
 
 export interface PostFormValues {
   title: string;
@@ -59,6 +62,16 @@ function slugify(text: string): string {
     .slice(0, LIMITS.slug);
 }
 
+/** ~225 wpm, clamped to the 1–60 range the API accepts. */
+function estimateReadTime(html: string): number {
+  const words = html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&[a-z#0-9]+;/gi, ' ')
+    .split(/\s+/)
+    .filter(Boolean).length;
+  return Math.min(60, Math.max(1, Math.round(words / 225)));
+}
+
 function Counter({ used, max }: { used: number; max: number }) {
   const warn = used >= max * 0.9;
   const over = used > max;
@@ -79,8 +92,8 @@ export function PostForm({ mode, currentSlug, initial }: Props) {
     title: initial?.title ?? '',
     slug: initial?.slug ?? '',
     excerpt: initial?.excerpt ?? '',
-    category: (initial?.category as Category) ?? 'Security Research',
-    author: initial?.author ?? 'Infocus-IT Team',
+    category: (initial?.category as Category) ?? CATEGORIES[0],
+    author: initial?.author ?? SITE.author,
     readTime: initial?.readTime ?? 10,
     coverImage: initial?.coverImage ?? '',
     content: initial?.content ?? '',
@@ -91,6 +104,11 @@ export function PostForm({ mode, currentSlug, initial }: Props) {
   const [slugLocked, setSlugLocked] = useState(
     mode === 'create' || !initial?.slug,
   );
+  // Same idea for read time: follows the body word count until edited by hand.
+  const [readTimeAuto, setReadTimeAuto] = useState(mode === 'create');
+  const [coverUploading, setCoverUploading] = useState(false);
+  const [coverDragOver, setCoverDragOver] = useState(false);
+  const coverFileRef = useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState<null | 'save' | 'publish' | 'delete'>(null);
   const [message, setMessage] = useState<
     | { kind: 'success'; text: string }
@@ -107,6 +125,31 @@ export function PostForm({ mode, currentSlug, initial }: Props) {
 
   function set<K extends keyof PostFormValues>(key: K, value: PostFormValues[K]) {
     setValues((v) => ({ ...v, [key]: value }));
+  }
+
+  function updateContent(html: string) {
+    setValues((v) => ({
+      ...v,
+      content: html,
+      readTime: readTimeAuto ? estimateReadTime(html) : v.readTime,
+    }));
+  }
+
+  async function uploadCover(file: File | undefined) {
+    if (!file || coverUploading) return;
+    setCoverUploading(true);
+    setMessage(null);
+    try {
+      const url = await uploadImage(file);
+      set('coverImage', url);
+    } catch (err) {
+      setMessage({
+        kind: 'error',
+        text: err instanceof Error ? err.message : 'Cover upload failed',
+      });
+    } finally {
+      setCoverUploading(false);
+    }
   }
 
   function updateTitle(next: string) {
@@ -208,11 +251,12 @@ export function PostForm({ mode, currentSlug, initial }: Props) {
     if (!values.title.trim()) return 'Title is required';
     if (!values.excerpt.trim()) return 'Excerpt is required';
     if (!values.author.trim()) return 'Author is required';
-    if (!values.coverImage.trim()) return 'Cover image URL is required';
+    if (coverUploading) return 'Waiting for cover upload…';
+    if (!values.coverImage.trim()) return 'Cover image is required';
     if (!values.content.trim()) return 'Body is required';
     if (values.readTime < 1 || values.readTime > 60) return 'Read time must be 1–60 minutes';
     return null;
-  }, [values]);
+  }, [values, coverUploading]);
 
   return (
     <form
@@ -237,7 +281,7 @@ export function PostForm({ mode, currentSlug, initial }: Props) {
             type="text"
             value={values.title}
             onChange={(e) => updateTitle(e.target.value)}
-            placeholder="The title of the editorial"
+            placeholder="e.g. Fake parcel delivery texts: how to spot them"
             className={`${inputCls} text-[15px]`}
             maxLength={LIMITS.title}
             required
@@ -298,7 +342,7 @@ export function PostForm({ mode, currentSlug, initial }: Props) {
               type="text"
               value={values.author}
               onChange={(e) => set('author', e.target.value)}
-              placeholder="Infocus-IT Team"
+              placeholder={SITE.author}
               className={inputCls}
               required
             />
@@ -306,6 +350,22 @@ export function PostForm({ mode, currentSlug, initial }: Props) {
           <div>
             <label htmlFor="readtime" className={labelCls}>
               <span>Read time (min)</span>
+              {readTimeAuto ? (
+                <span className="text-[10px] font-medium normal-case tracking-normal text-on-surface-muted">
+                  auto from body
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setReadTimeAuto(true);
+                    set('readTime', estimateReadTime(values.content));
+                  }}
+                  className="text-[10px] font-medium normal-case tracking-normal text-primary hover:underline"
+                >
+                  recalculate
+                </button>
+              )}
             </label>
             <input
               id="readtime"
@@ -313,7 +373,10 @@ export function PostForm({ mode, currentSlug, initial }: Props) {
               min={1}
               max={60}
               value={values.readTime}
-              onChange={(e) => set('readTime', Number(e.target.value))}
+              onChange={(e) => {
+                setReadTimeAuto(false);
+                set('readTime', Number(e.target.value));
+              }}
               className={inputCls}
               required
             />
@@ -344,42 +407,112 @@ export function PostForm({ mode, currentSlug, initial }: Props) {
 
         <div>
           <label htmlFor="cover" className={labelCls}>
-            <span>Cover image URL</span>
+            <span>Cover image</span>
+            <span className="text-[10px] font-medium normal-case tracking-normal text-on-surface-muted">
+              16:9 recommended · max 5 MB
+            </span>
           </label>
+
+          {values.coverImage ? (
+            <div className="relative overflow-hidden rounded-md ghost-border">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                key={values.coverImage}
+                src={values.coverImage}
+                alt="Cover preview"
+                className="aspect-[16/9] w-full bg-surface-high object-cover"
+              />
+              <div className="absolute right-2 top-2 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => coverFileRef.current?.click()}
+                  disabled={coverUploading}
+                  className="inline-flex items-center gap-1.5 rounded-md bg-surface-lowest/90 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-on-bg backdrop-blur hover:bg-surface-lowest disabled:opacity-60"
+                >
+                  {coverUploading ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <ImageUp className="h-3.5 w-3.5" aria-hidden="true" />
+                  )}
+                  Replace
+                </button>
+                <button
+                  type="button"
+                  onClick={() => set('coverImage', '')}
+                  aria-label="Remove cover image"
+                  className="inline-flex items-center rounded-md bg-surface-lowest/90 px-2 py-1.5 text-on-bg backdrop-blur hover:bg-surface-lowest"
+                >
+                  <X className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => coverFileRef.current?.click()}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setCoverDragOver(true);
+              }}
+              onDragLeave={() => setCoverDragOver(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setCoverDragOver(false);
+                void uploadCover(e.dataTransfer.files?.[0]);
+              }}
+              disabled={coverUploading}
+              className={`flex aspect-[16/9] w-full flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed text-sm transition-colors disabled:cursor-wait ${
+                coverDragOver
+                  ? 'border-primary bg-primary/5 text-primary'
+                  : 'border-outline-variant bg-surface-low text-on-surface-variant hover:border-primary/60 hover:text-on-bg'
+              }`}
+            >
+              {coverUploading ? (
+                <Loader2 className="h-6 w-6 animate-spin" aria-hidden="true" />
+              ) : (
+                <ImageUp className="h-6 w-6" aria-hidden="true" />
+              )}
+              <span className="font-semibold">
+                {coverUploading ? 'Uploading…' : 'Click to upload or drag an image here'}
+              </span>
+              <span className="text-[11px] text-on-surface-muted">JPG, PNG, WebP, AVIF or GIF</span>
+            </button>
+          )}
+
+          <input
+            ref={coverFileRef}
+            type="file"
+            accept={ACCEPTED_IMAGE_TYPES.join(',')}
+            className="hidden"
+            onChange={(e) => {
+              void uploadCover(e.target.files?.[0]);
+              e.target.value = '';
+            }}
+          />
+
           <input
             id="cover"
-            type="url"
+            type="text"
+            inputMode="url"
             value={values.coverImage}
             onChange={(e) => set('coverImage', e.target.value)}
-            placeholder="https://…/image.jpg"
-            className={`${inputCls} font-mono text-[12px]`}
-            required
+            placeholder="…or paste an image URL (https://… or /images/…)"
+            className={`${inputCls} mt-2 font-mono text-[12px]`}
           />
-          {values.coverImage && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={values.coverImage}
-              alt="Cover preview"
-              className="mt-3 h-32 w-full rounded-md object-cover ghost-border"
-              onError={(e) => {
-                (e.currentTarget as HTMLImageElement).style.display = 'none';
-              }}
-            />
-          )}
         </div>
 
         <div>
           <label htmlFor="body" className={labelCls}>
-            <span>Body (HTML — use &lt;h2&gt;, &lt;h3&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;li&gt;)</span>
+            <span>Body</span>
+            <span className="text-[10px] font-medium normal-case tracking-normal text-on-surface-muted">
+              Paste or drop images straight into the text
+            </span>
           </label>
-          <textarea
+          <RichTextEditor
             id="body"
-            rows={18}
             value={values.content}
-            onChange={(e) => set('content', e.target.value)}
-            placeholder="<h2>Section</h2><p>Editorial content…</p>"
-            className={`${inputCls} font-mono text-[12px] leading-relaxed`}
-            required
+            onChange={updateContent}
+            onError={(text) => setMessage({ kind: 'error', text })}
           />
         </div>
       </fieldset>

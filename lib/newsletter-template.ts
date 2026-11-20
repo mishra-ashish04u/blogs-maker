@@ -11,6 +11,8 @@
  *   - Colours repeated as both hex and attributes for Outlook mso-compat.
  */
 
+import { SITE } from './site';
+
 interface BuildInput {
   post: {
     slug: string;
@@ -51,7 +53,7 @@ function escape(str: string): string {
 export function buildDailyBriefEmail(input: BuildInput): BuiltEmail {
   const { post, postUrl, unsubscribeUrl } = input;
 
-  const subject = `${post.title} — Infocus-IT`;
+  const subject = `${post.title} — ${SITE.name}`;
 
   // Preheader: the snippet shown in the inbox preview next to the subject.
   const preheader = post.excerpt.length > 140
@@ -82,10 +84,10 @@ export function buildDailyBriefEmail(input: BuildInput): BuiltEmail {
           <tr>
             <td align="center" style="padding:0 0 24px 0;">
               <a href="${postUrl.replace(/\/blog\/.*$/, '')}" style="text-decoration:none;color:${PRIMARY};font-weight:800;font-size:22px;letter-spacing:-0.02em;font-family:Georgia,serif;">
-                INFOCUS<span style="color:${ON_BG};">IT</span>
+                ${escape(SITE.wordmark.lead)}<span style="color:${ON_BG};">${escape(SITE.wordmark.accent)}</span>
               </a>
               <div style="margin-top:6px;font-size:10px;color:${MUTED};text-transform:uppercase;letter-spacing:0.14em;font-weight:600;">
-                The Weekly Brief · ${escape(post.date)}
+                Scam alert · ${escape(post.date)}
               </div>
             </td>
           </tr>
@@ -144,7 +146,7 @@ export function buildDailyBriefEmail(input: BuildInput): BuiltEmail {
                       target="_blank"
                       style="display:inline-block;background-color:${PRIMARY};color:#ffffff;text-decoration:none;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;padding:12px 20px;border-radius:6px;"
                     >
-                      Read the editorial &rarr;
+                      Read the full alert &rarr;
                     </a>
                   </td>
                 </tr>
@@ -159,9 +161,9 @@ export function buildDailyBriefEmail(input: BuildInput): BuiltEmail {
           <tr>
             <td align="center" style="padding:16px 24px 8px 24px;">
               <p style="margin:0;font-size:11px;line-height:1.6;color:${MUTED};text-align:center;">
-                You&rsquo;re receiving this because you subscribed to The Weekly Brief at Infocus-IT.
+                You&rsquo;re receiving this because you subscribed to scam alerts from ${escape(SITE.name)}.
                 <br>
-                No vendor sponsorship. No AI hype. Just original cybersecurity analysis.
+                We will never ask for your passwords, codes or bank details by email.
               </p>
             </td>
           </tr>
@@ -173,11 +175,11 @@ export function buildDailyBriefEmail(input: BuildInput): BuiltEmail {
                 </a>
                 &nbsp;&middot;&nbsp;
                 <a href="${postUrl.replace(/\/blog\/.*$/, '')}" style="color:${PRIMARY};text-decoration:underline;">
-                  Visit Infocus-IT
+                  Visit ${escape(SITE.name)}
                 </a>
               </p>
               <p style="margin:12px 0 0 0;font-size:10px;color:${MUTED};text-transform:uppercase;letter-spacing:0.12em;">
-                &copy; ${new Date().getFullYear()} Infocus-IT Editorial
+                &copy; ${new Date().getFullYear()} ${escape(SITE.name)}
               </p>
             </td>
           </tr>
@@ -197,14 +199,15 @@ ${post.excerpt}
 
 By ${post.author}
 
-Read the editorial: ${postUrl}
+Read the full alert: ${postUrl}
 
 ---
 
-You're receiving this because you subscribed to The Weekly Brief at Infocus-IT.
+You're receiving this because you subscribed to scam alerts from ${SITE.name}.
+We will never ask for your passwords, codes or bank details by email.
 
 Unsubscribe: ${unsubscribeUrl}
-© ${new Date().getFullYear()} Infocus-IT Editorial`;
+© ${new Date().getFullYear()} ${SITE.name}`;
 
   return { subject, html, text };
 }

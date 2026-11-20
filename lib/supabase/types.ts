@@ -1,9 +1,11 @@
+import type { Category } from '../site';
+
 export type PostRow = {
   id: string;
   slug: string;
   title: string;
   excerpt: string;
-  category: 'Security Research' | 'Threats' | 'How-To' | 'Compliance';
+  category: Category;
   author: string;
   date: string;
   read_time: number;

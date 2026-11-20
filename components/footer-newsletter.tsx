@@ -72,7 +72,7 @@ export function FooterNewsletter() {
         />
         <button
           type="submit"
-          aria-label="Subscribe to the weekly brief"
+          aria-label="Subscribe to free scam alerts"
           disabled={state.kind === 'pending'}
           aria-busy={state.kind === 'pending'}
           className="cta-primary inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-70"

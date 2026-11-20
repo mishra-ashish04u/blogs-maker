@@ -4,31 +4,16 @@ import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { PageHeader } from '@/components/page-header';
 import { getAllPosts } from '@/lib/blog-data';
+import { CATEGORIES, CATEGORY_INFO, categorySlug } from '@/lib/site';
 
 export const metadata = {
-  title: 'Perspectives | Infocus-IT',
-  description: 'Op-eds, essays, and long-form commentary on the state of cybersecurity.',
+  title: 'Deep Dives',
+  description:
+    'In-depth explainers on how the biggest scams really work — the psychology, the playbook, and how to protect yourself and your family.',
+  alternates: { canonical: '/perspectives' },
 };
 
 export const revalidate = 300;
-
-const voices = [
-  {
-    name: 'Marcus Chen',
-    role: 'Threat Intelligence Lead',
-    bio: 'Tracks the industrialization of ransomware and the marketplaces behind modern extortion.',
-  },
-  {
-    name: 'Dr. Sarah Williams',
-    role: 'Security Researcher',
-    bio: 'Focuses on zero-day economics and the lifecycle of undisclosed vulnerabilities.',
-  },
-  {
-    name: 'Prof. Alexander Norton',
-    role: 'Cryptography Editor',
-    bio: 'Writes on the practical timeline for post-quantum migration across regulated industries.',
-  },
-];
 
 export default async function PerspectivesPage() {
   const blogPosts = await getAllPosts();
@@ -41,10 +26,10 @@ export default async function PerspectivesPage() {
       <main id="main">
 
       <PageHeader
-        kicker="Editorial Perspectives"
-        title="Long-form commentary on"
-        accent="what the signal means."
-        subtitle="Our contributors step back from the news cycle to frame the shifts shaping the next decade of security."
+        kicker="Deep Dives"
+        title="How the biggest scams"
+        accent="really work."
+        subtitle="Longer reads that unpack the playbook behind common scams — so you can recognise the next version, not just this one."
       />
 
       {/* Lead essay */}
@@ -63,7 +48,7 @@ export default async function PerspectivesPage() {
                   />
                 </div>
                 <p className="mt-6 label-overline">
-                  Lead Essay · {lead.category}
+                  Featured · {lead.category}
                 </p>
                 <h2 className="mt-3 font-playfair text-3xl font-semibold leading-[1.1] tracking-tight text-on-bg transition-colors group-hover:text-primary-ink md:text-[2.5rem]">
                   {lead.title}
@@ -78,26 +63,26 @@ export default async function PerspectivesPage() {
             <aside className="md:col-span-5">
               <header className="mb-6">
                 <h3 className="accent-bar font-playfair text-xl font-semibold text-on-bg">
-                  The Voices
+                  Browse by topic
                 </h3>
               </header>
               <ul className="space-y-5">
-                {voices.map((v) => (
-                  <li key={v.name} className="flex gap-4 rounded-2xl bg-surface-lowest p-5 shadow-ambient-sm">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-signature text-xs font-bold text-white shadow-ambient-sm">
-                      {v.name
-                        .split(' ')
-                        .map((n) => n[0])
-                        .slice(0, 2)
-                        .join('')}
-                    </div>
-                    <div>
-                      <p className="font-playfair text-lg font-semibold text-on-bg">{v.name}</p>
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-primary-ink">
-                        {v.role}
-                      </p>
-                      <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">{v.bio}</p>
-                    </div>
+                {CATEGORIES.map((c, i) => (
+                  <li key={c}>
+                    <Link
+                      href={`/curation#${categorySlug(c)}`}
+                      className="flex gap-4 rounded-2xl bg-surface-lowest p-5 shadow-ambient-sm transition-colors hover:text-primary"
+                    >
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-signature text-xs font-bold text-white shadow-ambient-sm">
+                        {String(i + 1).padStart(2, '0')}
+                      </div>
+                      <div>
+                        <p className="font-playfair text-lg font-semibold text-on-bg">{c}</p>
+                        <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">
+                          {CATEGORY_INFO[c].description}
+                        </p>
+                      </div>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -111,7 +96,7 @@ export default async function PerspectivesPage() {
         <div className="mx-auto max-w-7xl">
           <header className="mb-10">
             <h3 className="accent-bar font-playfair text-2xl font-semibold text-on-bg">
-              Further Essays
+              More deep dives
             </h3>
           </header>
 

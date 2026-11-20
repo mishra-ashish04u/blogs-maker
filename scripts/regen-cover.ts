@@ -24,7 +24,7 @@ async function regenOne(slug: string): Promise<{ ok: boolean; msg: string }> {
   console.log(`\n[regen-cover] ▸ ${slug}`);
   const supabase = getSupabaseAdmin();
 
-  // We need the category (to route Compliance topics to the curated
+  // We need the category (to route Security Tools posts to the curated
   // Unsplash pool) and the title (used as a reasonable fallback subject
   // if no imagePrompt was stored — we don't persist imagePrompt, so we
   // synthesise from title + category instead).
@@ -38,10 +38,10 @@ async function regenOne(slug: string): Promise<{ ok: boolean; msg: string }> {
     return { ok: false, msg: `Post not found: ${selErr?.message ?? 'no row'}` };
   }
 
-  // Synth subject from title + category. cover.ts will route Compliance
-  // to the curated boardroom pool anyway; for other categories this is a
-  // reasonable Unsplash query and a passable Pollinations prompt.
-  const subject = `${post.title}. editorial photography of ${post.category.toLowerCase()} scene`;
+  // Synth subject from title. cover.ts routes Security Tools to a curated
+  // pool; for other categories this is a reasonable Unsplash query and a
+  // passable Pollinations prompt.
+  const subject = `${post.title}. everyday home scene with a smartphone or laptop`;
 
   try {
     const coverUrl = await generateAndUploadCover(subject, post.slug, post.category);

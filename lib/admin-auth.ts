@@ -21,7 +21,7 @@ export const ADMIN_SESSION_MIN_SECRET_LEN = 32;
 const DEV_DEFAULTS = {
   secret: 'dev-only-secret-please-set-ADMIN_SESSION_SECRET-before-shipping',
   username: 'admin',
-  password: 'infocus2025',
+  password: 'dev-password',
 } as const;
 
 const IS_PROD = process.env.NODE_ENV === 'production';

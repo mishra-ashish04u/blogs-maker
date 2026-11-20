@@ -16,7 +16,7 @@
  *   - SMTP_PORT          465 (SSL) or 587 (STARTTLS). Defaults to 465.
  *   - SMTP_USER          mailbox login, e.g. "brief@your-domain.com"
  *   - SMTP_PASSWORD      mailbox password / app password
- *   - NEWSLETTER_FROM    optional display override, e.g. "Infocus-IT <brief@x.com>"
+ *   - NEWSLETTER_FROM    optional display override, e.g. "Daily Scam Alert <alerts@x.com>"
  *                        defaults to SMTP_USER if unset.
  *   - NEWSLETTER_REPLY_TO optional
  *   - SITE_URL           used to build absolute post + unsubscribe URLs.
@@ -26,6 +26,7 @@ import nodemailer, { type Transporter } from 'nodemailer';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import type { SubscriberRow } from '@/lib/supabase/types';
 import { buildDailyBriefEmail } from '@/lib/newsletter-template';
+import { SITE } from '@/lib/site';
 
 // Minimal but strict email regex. Rejects most garbage without pretending to
 // be a full RFC 5322 parser (nobody writes those right).
@@ -222,7 +223,7 @@ async function sendOne(
         'List-Unsubscribe': `<${args.unsubscribeUrl}>`,
         'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
         // Help some filters identify us as the transactional sender we are.
-        'X-Mailer': 'Infocus-IT Daily Brief',
+        'X-Mailer': `${SITE.name} Alerts`,
       },
     });
     return { ok: true };

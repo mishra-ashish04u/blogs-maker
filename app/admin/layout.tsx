@@ -12,10 +12,11 @@ import {
 import { LogoutButton } from '@/components/admin/logout-button';
 import { HealthPill } from '@/components/admin/health-pill';
 import { getAdminStatus } from '@/lib/admin-status';
+import { SITE } from '@/lib/site';
 
 export const metadata = {
-  title: 'Admin | Infocus-IT',
-  description: 'Editorial control room for the Infocus-IT journal.',
+  title: 'Admin',
+  description: `Admin dashboard for ${SITE.name}.`,
 };
 
 const sidebar = [

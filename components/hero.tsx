@@ -4,11 +4,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { BlogPost } from '@/lib/blog-data';
 
-const categoryColors = {
-  'Security Research': 'bg-blue-100 text-blue-700',
-  'Threats': 'bg-red-100 text-red-700',
-  'How-To': 'bg-orange-100 text-orange-700',
-  'Compliance': 'bg-green-100 text-green-700',
+const categoryColors: Record<BlogPost['category'], string> = {
+  'Scam Alerts': 'bg-red-100 text-red-700',
+  'Protection Guides': 'bg-orange-100 text-orange-700',
+  'Account Recovery': 'bg-blue-100 text-blue-700',
+  'Security Tools': 'bg-green-100 text-green-700',
 };
 
 export function Hero({ post }: { post: BlogPost }) {

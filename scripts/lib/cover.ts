@@ -4,24 +4,23 @@ import { generateCoverWithGemini } from './image-gemini';
 const BUCKET = 'covers';
 
 /**
- * House style for Infocus-IT cover images. Applied to every provider so
- * the archive reads like one magazine instead of a stock-photo pile.
+ * House style for cover images. Applied to every provider so the archive
+ * looks consistent instead of a stock-photo pile.
  *
  * Rules encoded:
- *   1) Palette — desaturated charcoal + muted amber only. No neon.
- *   2) Subject — physical / architectural. No UI screenshots, hooded
- *      silhouettes, or "cyber" tropes.
- *   3) Composition — cinematic wide, shallow DOF, strong negative space
- *      top-right so a headline can overlay.
- *   4) Film look — 35mm grain, subtle vignette. No HDR.
+ *   1) Subject — everyday, relatable scenes (phones, parcels, kitchen
+ *      tables). No hooded hackers or "cyber" tropes — readers are ordinary
+ *      people, and those clichés look like clickbait.
+ *   2) Light — natural, warm daylight. Calm, not scary.
+ *   3) Composition — wide, shallow depth of field, negative space for
+ *      overlay text.
  */
 const HOUSE_STYLE = [
-  'shot on 35mm cinema camera, anamorphic lens, shallow depth of field',
-  'muted colour palette, desaturated charcoal and bone, occasional dim amber accent, cool shadow tones, no saturated blues, no neon',
-  'editorial documentary photography, quiet intensity, overcast ambient light, no dramatic hero lighting',
-  'wide cinematic framing, 16:10 aspect, strong negative space top-right for overlay text',
-  'no text, no logos, no watermarks, no code on screens, no UI mockups, no hooded figures, no brain diagrams, no cliché "cyber" neon circuitry, no lock icons, no binary rain',
-  'subtle 35mm grain, natural vignette, photorealistic, printed-magazine colour grading',
+  'natural documentary photography, 35mm lens, shallow depth of field',
+  'soft natural daylight, warm neutral colour palette, calm everyday home atmosphere, no neon',
+  'wide framing, 16:10 aspect, clear negative space for overlay text',
+  'no text, no readable screens, no logos, no brand names, no watermarks, no faces, no hooded figures, no cliché "cyber" neon circuitry, no lock icons, no binary code',
+  'photorealistic, subtle film grain, magazine colour grading',
 ].join(', ');
 
 function scrubPrompt(raw: string): string {
@@ -38,28 +37,20 @@ function scrubPrompt(raw: string): string {
 }
 
 /**
- * Curated Unsplash queries for Compliance topics. The LLM's imagePrompt
- * often leaks "data" or "security" words which, when searched on Unsplash,
- * return data-center and cable-closet photos — wrong for a GRC/privacy
- * piece. We override with terms that reliably match editorial governance
- * imagery (boardrooms, binders, contracts).
+ * Curated Unsplash queries for tool/review posts. The LLM's imagePrompt
+ * for these often leaks "security" or "data" words, which on Unsplash
+ * return data-center photos — wrong for an everyday-reader site.
  */
-const COMPLIANCE_UNSPLASH_QUERIES = [
-  'empty boardroom conference table',
-  'business documents on desk',
-  'office binders filing cabinet',
-  'signing contract pen paper',
-  'corporate meeting room empty chairs',
-  'financial district skyscraper dusk',
-  'law firm library bookshelves',
-  'paperwork folders stacked desk',
+const TOOLS_UNSPLASH_QUERIES = [
+  'person using smartphone at home',
+  'laptop on kitchen table morning',
+  'hands holding phone sofa',
+  'tablet and coffee on table',
 ];
 
 function unsplashQueryFor(subject: string, category?: string): string {
-  if (category === 'Compliance') {
-    return COMPLIANCE_UNSPLASH_QUERIES[
-      Math.floor(Math.random() * COMPLIANCE_UNSPLASH_QUERIES.length)
-    ];
+  if (category === 'Security Tools') {
+    return TOOLS_UNSPLASH_QUERIES[Math.floor(Math.random() * TOOLS_UNSPLASH_QUERIES.length)];
   }
   return subject;
 }
@@ -137,7 +128,7 @@ export async function generateAndUploadCover(
   slug: string,
   category?: string,
 ): Promise<string> {
-  const subject = scrubPrompt(prompt) || 'quiet architectural scene';
+  const subject = scrubPrompt(prompt) || 'smartphone on a kitchen table in morning light';
   const fullPrompt = `${subject}. ${HOUSE_STYLE}`;
 
   // Provider chain:
@@ -157,9 +148,9 @@ export async function generateAndUploadCover(
     buffer = await generateCoverWithGemini(fullPrompt);
   }
   if (!buffer && forced !== 'pollinations') {
-    // Unsplash searches on a category-aware query. For Compliance topics
+    // Unsplash searches on a category-aware query. For Security Tools posts
     // the LLM's subject often leaks "data/security" terms that return
-    // data-center photos, so we override with a curated boardroom pool.
+    // data-center photos, so we override with a curated everyday pool.
     const candidate = await generateWithUnsplash(unsplashQueryFor(subject, category));
     if (candidate) {
       buffer = candidate;

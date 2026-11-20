@@ -14,22 +14,12 @@
  */
 
 import type { BlogPost } from '@/lib/blog-data';
+import { SITE } from '@/lib/site';
+
+// Brand constants live in lib/site.ts; re-exported for existing importers.
+export { SITE };
 
 const FALLBACK_URL = 'http://localhost:3000';
-
-export const SITE = {
-  name: 'Infocus-IT',
-  tagline: 'Cybersecurity editorial for working defenders.',
-  description:
-    'Independent cybersecurity editorial featuring daily in-depth analysis of emerging threats, security research, and defender-first practical guidance. No vendor marketing.',
-  author: 'Infocus-IT Team',
-  locale: 'en_US',
-  twitterHandle: '@infocusit',
-  // 400x400 square logo for Organization schema. If you add a real hosted
-  // logo PNG, update this URL.
-  logoPath: '/icon-light-32x32.png',
-  rssTitle: 'Infocus-IT · Daily Editorial',
-} as const;
 
 export function siteUrl(): string {
   const raw = process.env.SITE_URL;
@@ -155,7 +145,7 @@ export function siteJsonLd() {
         '@type': 'ImageObject',
         url: absoluteUrl(SITE.logoPath),
       },
-      sameAs: [] as string[], // Add social profiles when they exist.
+      sameAs: SITE.socials.map((s) => s.href),
       description: SITE.description,
     },
     {

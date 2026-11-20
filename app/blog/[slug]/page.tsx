@@ -9,6 +9,8 @@ import { ReadingProgress } from '@/components/blog/reading-progress';
 import { TableOfContents } from '@/components/blog/table-of-contents';
 import { NewsletterBlock } from '@/components/blog/newsletter-block';
 import { getPost, getAllPosts } from '@/lib/blog-data';
+import { sanitizePostHtml } from '@/lib/html-sanitize';
+import { categorySlug } from '@/lib/site';
 import {
   SITE,
   absoluteUrl,
@@ -32,7 +34,7 @@ export async function generateMetadata({
   if (!post) {
     return {
       title: 'Post not found',
-      description: 'The editorial you are looking for does not exist.',
+      description: 'The article you are looking for does not exist.',
       robots: { index: false, follow: false },
     };
   }
@@ -49,7 +51,7 @@ export async function generateMetadata({
     description: post.excerpt,
     alternates: { canonical: url },
     authors: [{ name: post.author }],
-    keywords: [post.category, 'cybersecurity', 'editorial', post.author],
+    keywords: [post.category, 'scam alert', 'scam', 'fraud prevention', 'online safety'],
     openGraph: {
       type: 'article',
       url,
@@ -113,7 +115,7 @@ export default async function BlogPostPage({
     articleJsonLd({ post }),
     breadcrumbJsonLd([
       { name: 'Home', path: '/' },
-      { name: post.category, path: `/curation#${post.category.toLowerCase().replace(/\s+/g, '-')}` },
+      { name: post.category, path: `/curation#${categorySlug(post.category)}` },
       { name: post.title, path: `/blog/${post.slug}` },
     ]),
   ]);
@@ -138,7 +140,7 @@ export default async function BlogPostPage({
               className="fade-in group mb-8 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-on-surface-muted transition-colors hover:text-primary"
             >
               <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" aria-hidden="true" />
-              Back to dispatch
+              Back to latest alerts
             </Link>
 
             <p className="fade-in label-overline">
@@ -161,7 +163,7 @@ export default async function BlogPostPage({
                 <div className="text-sm">
                   <p className="font-semibold uppercase tracking-[0.06em] text-on-bg">{post.author}</p>
                   <p className="text-[11px] uppercase tracking-[0.14em] text-on-surface-muted">
-                    Editorial desk
+                    Reviewed by our team
                   </p>
                 </div>
               </div>
@@ -210,114 +212,13 @@ export default async function BlogPostPage({
             }`}
           >
             <div className={`w-full ${hasToc ? 'mx-auto max-w-3xl lg:mx-0' : ''}`}>
-            <style>{`
-              .editorial-body { font-family: var(--font-sans); }
-              .editorial-body > *:first-child { margin-top: 0; }
-              .editorial-body h2 {
-                font-family: var(--font-sans);
-                font-weight: 700;
-                font-size: 1.75rem;
-                line-height: 1.2;
-                letter-spacing: -0.025em;
-                margin-top: 2.75rem;
-                margin-bottom: 1rem;
-                color: var(--on-background);
-              }
-              .editorial-body h3 {
-                font-family: var(--font-sans);
-                font-weight: 700;
-                font-size: 1.375rem;
-                line-height: 1.3;
-                letter-spacing: -0.02em;
-                margin-top: 2.25rem;
-                margin-bottom: 0.625rem;
-                color: var(--on-background);
-              }
-              .editorial-body p {
-                font-size: 1.0625rem;
-                line-height: 1.75;
-                color: var(--on-surface);
-                margin-bottom: 1.25rem;
-              }
-              .editorial-body ul, .editorial-body ol {
-                margin: 0 0 1.25rem 0;
-                padding-left: 1.5rem;
-              }
-              .editorial-body ul { list-style: none; }
-              .editorial-body ul li {
-                position: relative;
-                padding-left: 1.25rem;
-                font-size: 1.0625rem;
-                line-height: 1.75;
-                color: var(--on-surface);
-                margin-bottom: 0.5rem;
-              }
-              .editorial-body ul li::before {
-                content: '';
-                position: absolute;
-                left: 0; top: 0.8rem;
-                width: 5px; height: 5px;
-                border-radius: 2px;
-                background: var(--primary);
-              }
-              .editorial-body ol { list-style: decimal; }
-              .editorial-body ol li {
-                font-size: 1.0625rem;
-                line-height: 1.75;
-                color: var(--on-surface);
-                margin-bottom: 0.5rem;
-              }
-              .editorial-body a {
-                color: var(--tertiary);
-                text-decoration: underline;
-                text-decoration-thickness: 1px;
-                text-underline-offset: 3px;
-                text-decoration-color: color-mix(in srgb, var(--tertiary) 40%, transparent);
-                transition: color 150ms ease, text-decoration-color 150ms ease;
-              }
-              .editorial-body a:hover {
-                color: var(--tertiary-hover);
-                text-decoration-color: var(--tertiary);
-              }
-              .editorial-body blockquote {
-                margin: 1.75rem 0;
-                padding-left: 1.25rem;
-                border-left: 3px solid var(--primary);
-                font-family: var(--font-serif);
-                font-style: italic;
-                font-size: 1.25rem;
-                font-weight: 500;
-                line-height: 1.45;
-                color: var(--on-background);
-              }
-              .editorial-body code {
-                font-family: var(--font-mono), monospace;
-                font-size: 0.875em;
-                background: var(--surface-container);
-                padding: 0.15em 0.4em;
-                border-radius: 4px;
-                color: var(--primary);
-                word-break: break-word;
-                overflow-wrap: anywhere;
-              }
-              .editorial-body pre {
-                background: var(--surface-container);
-                padding: 1rem 1.25rem;
-                border-radius: 8px;
-                overflow-x: auto;
-                margin-bottom: 1.25rem;
-                font-size: 0.875rem;
-              }
-              .editorial-body pre code {
-                background: transparent;
-                padding: 0;
-                color: var(--on-surface);
-              }
-            `}</style>
+            {/* Typography lives in globals.css (.editorial-body) so the admin
+                editor renders identically. Content is re-sanitised here as
+                defence in depth for rows written before sanitisation existed. */}
             <div
               id="article-body"
               className="editorial-body fade-in"
-              dangerouslySetInnerHTML={{ __html: post.content }}
+              dangerouslySetInnerHTML={{ __html: sanitizePostHtml(post.content) }}
             />
 
             {/* EDITORIAL NOTE — replaces the old per-author bio.
@@ -328,14 +229,18 @@ export default async function BlogPostPage({
                   {authorInitials(post.author)}
                 </div>
                 <div>
-                  <p className="label-overline">About this editorial</p>
+                  <p className="label-overline">About this article</p>
                   <p className="mt-1.5 text-xl font-bold uppercase tracking-[-0.015em] text-on-bg">
                     {post.author}
                   </p>
                   <p className="mt-2 max-w-xl text-sm leading-relaxed text-on-surface-variant">
-                    Drafted by Infocus-IT&rsquo;s editorial pipeline from primary sources and
-                    reviewed for voice and accuracy. We publish daily, defender-first, with no
-                    vendor sponsorship.
+                    Written with the help of AI tools from official warnings and trusted sources,
+                    then checked and edited by a person before publishing. This is general
+                    information, not legal or financial advice.{' '}
+                    <Link href="/ethics" className="text-tertiary underline-offset-2 hover:underline">
+                      How we work
+                    </Link>
+                    .
                   </p>
                 </div>
               </div>

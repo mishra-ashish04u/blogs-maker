@@ -1,25 +1,26 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowUpRight, Linkedin, Youtube, Rss, Mail } from 'lucide-react';
+import { ArrowUpRight, Rss, Mail } from 'lucide-react';
 import { FooterNewsletter } from '@/components/footer-newsletter';
+import { SITE } from '@/lib/site';
 
 const columns = [
   {
-    title: 'Journal',
+    title: 'Read',
     links: [
-      { label: 'Latest', href: '/' },
+      { label: 'Latest Alerts', href: '/' },
       { label: 'Topics', href: '/curation' },
-      { label: 'Analysis', href: '/perspectives' },
+      { label: 'Deep Dives', href: '/perspectives' },
       { label: 'Archive', href: '/archives' },
     ],
   },
   {
-    title: 'Newsroom',
+    title: 'Get Involved',
     links: [
-      { label: 'About', href: '/about' },
-      { label: 'Daily Brief', href: '/#newsletter' },
-      { label: 'Submit a Tip', href: '/submit-tip' },
+      { label: 'Report a Scam', href: '/submit-tip' },
+      { label: 'Email Alerts', href: '/#newsletter' },
+      { label: 'About Us', href: '/about' },
       { label: 'Contact', href: '/contact' },
     ],
   },
@@ -27,8 +28,8 @@ const columns = [
     title: 'Legal',
     links: [
       { label: 'Privacy Policy', href: '/privacy' },
-      { label: 'Terms of Service', href: '/terms' },
-      { label: 'Ethics Statement', href: '/ethics' },
+      { label: 'Terms of Use', href: '/terms' },
+      { label: 'Editorial Policy', href: '/ethics' },
     ],
   },
 ];
@@ -47,36 +48,30 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
           {/* BRAND BLOCK */}
           <div className="md:col-span-5">
-            <Link href="/" className="inline-block" aria-label="Infocus-IT home">
+            <Link href="/" className="inline-block" aria-label={`${SITE.name} home`}>
               <span className="wordmark text-[26px] uppercase leading-none">
-                Infocus-<span className="text-on-bg">IT</span>
+                {SITE.wordmark.lead}
+                <span className="text-on-bg">{SITE.wordmark.accent}</span>
               </span>
             </Link>
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-on-surface-variant">
-              A digital destination for those who seek depth in the age of speed. Curated daily for
-              the security analyst — no hype, no marketing, just research.
+              Plain-English alerts on the scams going around right now, and simple steps to
+              protect your money, accounts and family.
             </p>
 
             {/* Inline newsletter capture — client component, hits the real API */}
             <FooterNewsletter />
 
             <div className="mt-8 flex items-center gap-3">
-              <SocialIcon
-                href="https://www.linkedin.com/company/infocuit/"
-                label="InFocus IT on LinkedIn"
-              >
-                <Linkedin className="h-4 w-4" aria-hidden="true" />
-              </SocialIcon>
-              <SocialIcon
-                href="https://www.youtube.com/@infocusit"
-                label="InFocus IT on YouTube"
-              >
-                <Youtube className="h-4 w-4" aria-hidden="true" />
-              </SocialIcon>
+              {SITE.socials.map((s) => (
+                <SocialIcon key={s.href} href={s.href} label={`${SITE.name} on ${s.label}`}>
+                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                </SocialIcon>
+              ))}
               <SocialIcon href="/feed.xml" label="RSS feed">
                 <Rss className="h-4 w-4" aria-hidden="true" />
               </SocialIcon>
-              <SocialIcon href="mailto:editor@infocusit.in" label="Email the editor">
+              <SocialIcon href={`mailto:${SITE.email.contact}`} label="Email us">
                 <Mail className="h-4 w-4" aria-hidden="true" />
               </SocialIcon>
             </div>
@@ -113,10 +108,10 @@ export function Footer() {
         {/* BOTTOM STRIP */}
         <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-outline-variant/40 pt-6 md:flex-row md:items-center">
           <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-on-surface-muted">
-            © {currentYear} Infocus-IT Editorial · Curated for the cyber mind.
+            © {currentYear} {SITE.name}
           </p>
           <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-on-surface-muted">
-            Published daily · Independent · No vendor sponsorship
+            Information only · Not legal or financial advice
           </p>
         </div>
       </div>

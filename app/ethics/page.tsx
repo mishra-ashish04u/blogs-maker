@@ -1,38 +1,38 @@
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { PageHeader } from '@/components/page-header';
+import { SITE } from '@/lib/site';
 
 export const metadata = {
-  title: 'Ethics Statement | Infocus-IT',
-  description:
-    'How Infocus-IT reports on cybersecurity: independence from vendors, AI-assisted authorship disclosure, corrections policy, and source handling.',
+  title: 'Editorial Policy',
+  description: `How ${SITE.name} researches and writes articles, uses AI tools, handles corrections, and keeps advertising separate from editorial decisions.`,
   alternates: { canonical: '/ethics' },
 };
 
 const pillars = [
   {
-    title: 'Independence',
-    body: 'Infocus-IT takes no money from vendors in exchange for coverage. No sponsored posts, no affiliate links in analysis, no speaker fees, no "thought leadership" swaps. We are operated by a security services firm (InFocus IT Consulting Pvt Ltd), and we disclose that relationship in every piece that touches the services we sell.',
+    title: 'Where our information comes from',
+    body: 'We base alerts on official warnings from consumer-protection agencies, police and banks, statements from the companies being impersonated, trusted news reporting, and scam examples sent in by readers. We link to the original source wherever we can.',
   },
   {
-    title: 'Source discipline',
-    body: 'We cite primary disclosures, vendor advisories, CVE records, and first-party telemetry. We do not invent CVE numbers, victim names, or version numbers &mdash; when specifics are missing from the public record, we speak in categories and point back to what is cited.',
+    title: 'Human review of every article',
+    body: 'We use AI writing tools to help draft some articles. Every article is read, fact-checked against its sources and edited by a person before it is published. We never invent victims, quotes, statistics or case details.',
   },
   {
-    title: 'AI-assisted authorship',
-    body: 'Our daily editorial is produced by an LLM-assisted pipeline (Groq Llama 3.3 plus a Gemini editor pass) under human editorial review. We believe this is clearly within the line between tool-use and ghostwriting, but we disclose it here so readers can weigh the work accordingly. We do not attribute articles to fabricated human bylines; every piece runs under the Infocus-IT Team byline.',
+    title: 'Advertising',
+    body: 'This site is free to read because it shows ads, including ads served by Google. Advertisers have no say over what we write, and we never accept payment to cover, or avoid covering, a company or product.',
+  },
+  {
+    title: 'Product recommendations',
+    body: 'When we recommend a security tool, we explain why. Some links to products may be affiliate links, which means we may earn a small commission at no extra cost to you. When an article contains affiliate links, we say so at the top of that article.',
   },
   {
     title: 'Corrections',
-    body: 'When we get something wrong, we correct it in place and add a dated correction note at the bottom of the article. Significant factual corrections are announced in the next newsletter. We do not silently edit published posts.',
+    body: 'When we get something wrong, we correct it in the article and add a dated note explaining what changed. We do not quietly rewrite published warnings.',
   },
   {
-    title: 'Responsible disclosure',
-    body: 'If a tip involves an unpatched vulnerability, we default to coordinated disclosure with the vendor. We publish once a fix is available, a window has elapsed, or active exploitation makes public warning more urgent than vendor notice.',
-  },
-  {
-    title: 'Conflict of interest',
-    body: 'Editors do not hold material financial interests in vendors we cover. Where our parent company has a client relationship with a vendor in a story, we note the relationship explicitly in the article.',
+    title: 'Not personal advice',
+    body: 'Our articles are general information to help you recognise and avoid scams. They are not legal, financial or professional advice for your specific situation. If you have lost money, contact your bank and the police straight away.',
   },
 ];
 
@@ -42,10 +42,10 @@ export default function EthicsPage() {
       <Navbar />
       <main id="main">
         <PageHeader
-          kicker="Editorial"
-          title="Ethics"
-          accent="Statement."
-          subtitle="How we report, what we disclose, and the boundaries we keep between editorial and the business that funds it."
+          kicker="How we work"
+          title="Editorial"
+          accent="Policy."
+          subtitle="How we research and write our articles, how we use AI tools, and how we keep advertising separate from what we publish."
         />
 
         <section className="px-6 py-14">
@@ -57,13 +57,8 @@ export default function EthicsPage() {
                   className="rounded-xl border border-outline-variant bg-surface-lowest p-7"
                 >
                   <p className="label-overline">{String(i + 1).padStart(2, '0')}</p>
-                  <h2 className="mt-3 text-xl font-bold tracking-[-0.015em] text-on-bg">
-                    {p.title}
-                  </h2>
-                  <p
-                    className="mt-3 text-[14px] leading-relaxed text-on-surface-variant"
-                    dangerouslySetInnerHTML={{ __html: p.body }}
-                  />
+                  <h2 className="mt-3 text-xl font-bold tracking-[-0.015em] text-on-bg">{p.title}</h2>
+                  <p className="mt-3 text-[14px] leading-relaxed text-on-surface-variant">{p.body}</p>
                 </div>
               ))}
             </div>
@@ -72,15 +67,17 @@ export default function EthicsPage() {
 
         <section className="px-6 pb-24">
           <div className="mx-auto max-w-3xl rounded-2xl border border-outline-variant bg-surface-lowest p-8 md:p-10">
-            <p className="label-overline">Questions or concerns</p>
+            <p className="label-overline">Found a mistake?</p>
             <p className="mt-4 text-[15px] leading-relaxed text-on-surface-variant">
-              If you think we&rsquo;ve fallen short of any of the above &mdash; or if you believe
-              we&rsquo;ve missed a disclosure that matters &mdash; tell us directly at{' '}
-              <a href="mailto:editor@infocusit.in" className="text-tertiary underline-offset-2 hover:underline">
-                editor@infocusit.in
-              </a>
-              . We take ethics complaints seriously and will respond with either a correction, a
-              clarification, or a reasoned explanation of why no change is warranted.
+              If you think an article is wrong or out of date, email us at{' '}
+              <a
+                href={`mailto:${SITE.email.contact}`}
+                className="text-tertiary underline-offset-2 hover:underline"
+              >
+                {SITE.email.contact}
+              </a>{' '}
+              with the article link. We will either correct it or explain why we think it is
+              accurate.
             </p>
           </div>
         </section>

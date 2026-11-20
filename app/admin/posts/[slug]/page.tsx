@@ -1,9 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { cookies } from 'next/headers';
 import { ExternalLink } from 'lucide-react';
-import { createClient } from '@/utils/supabase/server';
-import { isSupabaseConfigured, type PostRow } from '@/lib/supabase/types';
+import { getSupabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase/admin';
+import type { PostRow } from '@/lib/supabase/types';
 import { getPost } from '@/lib/blog-data';
 import { PostForm } from '@/components/admin/post-form';
 
@@ -11,11 +10,13 @@ export const dynamic = 'force-dynamic';
 
 /**
  * Admin edit page fetches directly (including drafts/retired), not via
- * getPost() which filters by status='published'.
+ * getPost() which filters by status='published'. Uses the service-role
+ * client because RLS only exposes published rows to the public key.
+ * (This route is gated by the admin session check in proxy.ts.)
  */
 async function fetchAnyPost(slug: string): Promise<PostRow | null> {
-  if (!isSupabaseConfigured()) return null;
-  const supabase = createClient(await cookies());
+  if (!isSupabaseAdminConfigured()) return null;
+  const supabase = getSupabaseAdmin();
   const { data } = await supabase
     .from('posts')
     .select('*')

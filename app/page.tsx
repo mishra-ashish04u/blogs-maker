@@ -6,24 +6,7 @@ import { Footer } from '@/components/footer';
 import { FooterNewsletter } from '@/components/footer-newsletter';
 import { getAllPosts } from '@/lib/blog-data';
 import { siteJsonLd } from '@/lib/seo';
-
-const CATEGORIES = [
-  'Security Research',
-  'Threats',
-  'How-To',
-  'Compliance',
-] as const;
-
-const CATEGORY_DESC: Record<(typeof CATEGORIES)[number], string> = {
-  'Security Research':
-    "Deep analysis of emerging threats, techniques, and tooling from the defender's bench.",
-  Threats:
-    'Breaking coverage of active attacks, malware families, and APT campaigns in the wild.',
-  'How-To':
-    'Practical walkthroughs for hardening systems, detection engineering, and response.',
-  Compliance:
-    'Policy, frameworks, and regulatory guidance for security and GRC teams.',
-};
+import { CATEGORIES, CATEGORY_INFO, categorySlug } from '@/lib/site';
 
 // Uniform overlay pill style for images (Duration-style: white pill, dark text)
 const OVERLAY_PILL =
@@ -263,7 +246,7 @@ export default async function Home() {
               {categoryCards.map(({ cat, image }) => (
                 <Link
                   key={cat}
-                  href={`/curation?category=${encodeURIComponent(cat)}`}
+                  href={`/curation#${categorySlug(cat)}`}
                   className="group flex flex-col items-center rounded-xl border border-outline-variant bg-surface-lowest p-8 text-center transition-all hover:border-primary/40 hover:shadow-ambient-sm"
                 >
                   <div className="relative mb-5 h-28 w-28 overflow-hidden rounded-lg bg-surface-container">
@@ -273,7 +256,7 @@ export default async function Home() {
                     {cat}
                   </h3>
                   <p className="mt-2 line-clamp-3 min-h-[3.75rem] text-[13px] leading-relaxed text-on-surface-variant">
-                    {CATEGORY_DESC[cat]}
+                    {CATEGORY_INFO[cat].description}
                   </p>
                 </Link>
               ))}
@@ -352,15 +335,15 @@ export default async function Home() {
               <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-center">
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-tertiary">
-                    Daily brief · 06:00
+                    Free email alerts
                   </p>
                   <h2 className="mt-3 text-[2rem] font-extrabold leading-[1.1] tracking-[-0.03em] text-on-bg md:text-[2.5rem]">
-                    Subscribe now to stay updated with the daily brief
+                    Get warned about new scams before they reach you
                   </h2>
                   <p className="mt-5 max-w-md text-[15px] leading-relaxed text-on-surface-variant">
-                    Tomorrow&rsquo;s editorial in your inbox — daily threat
-                    analysis, defender playbooks, and compliance updates. No
-                    vendor marketing.
+                    One short email with the scam everyone is talking about and
+                    exactly how to stay safe. Free, no spam, unsubscribe in one
+                    click.
                   </p>
                 </div>
                 <div className="md:justify-self-end">
@@ -368,7 +351,7 @@ export default async function Home() {
                     <FooterNewsletter />
                     <p className="mt-4 text-[11px] leading-relaxed text-on-surface-muted">
                       By subscribing, you agree to our{' '}
-                      <Link href="/about" className="text-tertiary underline-offset-2 hover:underline">
+                      <Link href="/privacy" className="text-tertiary underline-offset-2 hover:underline">
                         privacy policy
                       </Link>
                       . One-click unsubscribe in every email.

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@/utils/supabase/middleware';
 import { ADMIN_COOKIE, verifyAdminToken } from '@/lib/admin-auth';
+import { isSupabaseConfigured } from '@/lib/supabase/types';
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -39,6 +40,10 @@ export async function proxy(request: NextRequest) {
     // admin pages use the server-role client directly.
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
+
+  // No Supabase env (e.g. fresh local checkout): the data layer falls back to
+  // static posts, so skip the Supabase client instead of throwing on every request.
+  if (!isSupabaseConfigured()) return NextResponse.next();
 
   // Default: continue with Supabase session refresh
   return createClient(request);

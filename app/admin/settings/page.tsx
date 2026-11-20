@@ -1,11 +1,34 @@
-import { AlertTriangle, Save } from 'lucide-react';
+import { CheckCircle2, XCircle } from 'lucide-react';
+import { CATEGORIES, SITE } from '@/lib/site';
+import { isSupabaseAdminConfigured } from '@/lib/supabase/admin';
+import { isNewsletterConfigured } from '@/lib/newsletter';
 
-const inputCls =
-  'w-full rounded-lg bg-surface-low ghost-border px-3.5 py-2.5 text-sm text-on-bg placeholder:text-on-surface-muted transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-container focus-visible:border-transparent';
-const labelCls =
-  'mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-on-surface-variant';
+export const dynamic = 'force-dynamic';
 
+/**
+ * Read-only settings overview. Brand values live in lib/site.ts and secrets
+ * in environment variables, so this page shows what is configured rather
+ * than offering inputs that could not be saved.
+ */
 export default function AdminSettingsPage() {
+  const brand: Array<[string, string]> = [
+    ['Site name', SITE.name],
+    ['Tagline', SITE.tagline],
+    ['Domain', SITE.domain],
+    ['Author byline', SITE.author],
+    ['Contact email', SITE.email.contact],
+    ['Scam reports email', SITE.email.reports],
+    ['Privacy email', SITE.email.privacy],
+    ['Categories', CATEGORIES.join(' · ')],
+  ];
+
+  const services: Array<[string, boolean, string]> = [
+    ['Database (Supabase)', isSupabaseAdminConfigured(), 'NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY'],
+    ['Email newsletter (SMTP)', isNewsletterConfigured(), 'SMTP_HOST, SMTP_USER, SMTP_PASSWORD'],
+    ['Live-site cache refresh', Boolean(process.env.SITE_URL && process.env.REVALIDATE_SECRET), 'SITE_URL, REVALIDATE_SECRET'],
+    ['AI writer (Groq or Gemini)', Boolean(process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY), 'GROQ_API_KEY or GEMINI_API_KEY'],
+  ];
+
   return (
     <div className="space-y-12">
       <div>
@@ -16,11 +39,12 @@ export default function AdminSettingsPage() {
           </p>
         </div>
         <h1 className="mt-4 font-playfair text-4xl font-semibold tracking-tight text-on-bg md:text-[3rem]">
-          Journal Settings.
+          Site Settings.
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-on-surface-variant">
-          Surface-level configuration for the journal. API keys and secrets live in environment
-          variables — never in this panel.
+          Brand details are set in <code className="font-mono text-[12px]">lib/site.ts</code>.
+          API keys and passwords are environment variables (<code className="font-mono text-[12px]">.env.local</code>{' '}
+          locally, project settings on your host) and are never shown here.
         </p>
       </div>
 
@@ -28,69 +52,43 @@ export default function AdminSettingsPage() {
         <header className="mb-6">
           <h2 className="accent-bar font-playfair text-xl font-semibold text-on-bg">Brand</h2>
         </header>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div>
-            <label htmlFor="brand-name" className={labelCls}>Journal name</label>
-            <input id="brand-name" defaultValue="Infocus-IT" className={inputCls} />
-          </div>
-          <div>
-            <label htmlFor="brand-tag" className={labelCls}>Tagline</label>
-            <input id="brand-tag" defaultValue="Curated for the security analyst." className={inputCls} />
-          </div>
-        </div>
+        <dl className="grid grid-cols-1 gap-x-8 gap-y-4 md:grid-cols-2">
+          {brand.map(([label, value]) => (
+            <div key={label}>
+              <dt className="text-[10px] font-semibold uppercase tracking-[0.24em] text-on-surface-variant">
+                {label}
+              </dt>
+              <dd className="mt-1 break-words text-sm text-on-bg">{value}</dd>
+            </div>
+          ))}
+        </dl>
       </section>
 
       <section className="rounded-2xl bg-surface-lowest p-6 shadow-ambient-sm md:p-8">
         <header className="mb-6">
-          <h2 className="accent-bar font-playfair text-xl font-semibold text-on-bg">Newsletter</h2>
+          <h2 className="accent-bar font-playfair text-xl font-semibold text-on-bg">Connected services</h2>
         </header>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div>
-            <label htmlFor="nl-provider" className={labelCls}>Provider</label>
-            <select id="nl-provider" className={inputCls}>
-              <option>Resend</option>
-              <option>Buttondown</option>
-              <option>ConvertKit</option>
-              <option>None</option>
-            </select>
-          </div>
-          <div>
-            <label htmlFor="nl-from" className={labelCls}>From address</label>
-            <input id="nl-from" defaultValue="brief@infocusit.example" className={inputCls} />
-          </div>
-        </div>
+        <ul className="divide-y divide-outline-variant">
+          {services.map(([label, ok, vars]) => (
+            <li key={label} className="flex items-start gap-3 py-3">
+              {ok ? (
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden="true" />
+              ) : (
+                <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-on-surface-muted" aria-hidden="true" />
+              )}
+              <div>
+                <p className="text-sm font-semibold text-on-bg">
+                  {label}{' '}
+                  <span className={`font-normal ${ok ? 'text-success' : 'text-on-surface-muted'}`}>
+                    — {ok ? 'configured' : 'not configured'}
+                  </span>
+                </p>
+                <p className="mt-0.5 font-mono text-[11px] text-on-surface-muted">{vars}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </section>
-
-      <section>
-        <header className="mb-6">
-          <h2 className="accent-bar font-playfair text-xl font-semibold text-on-bg">Danger Zone</h2>
-        </header>
-        <div className="flex flex-col items-start justify-between gap-4 rounded-2xl bg-error/5 p-6 md:flex-row md:items-center">
-          <div className="flex items-start gap-4">
-            <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-error/15 text-error">
-              <AlertTriangle className="h-4 w-4" aria-hidden="true" />
-            </span>
-            <div>
-              <p className="font-playfair text-base font-semibold text-on-bg">
-                Purge archive cache
-              </p>
-              <p className="mt-1 text-xs text-on-surface-muted">
-                Rebuilds the static archive index. Live posts are not affected.
-              </p>
-            </div>
-          </div>
-          <button className="inline-flex items-center gap-2 rounded-lg bg-error/10 px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-error transition-colors hover:bg-error/15">
-            Purge
-          </button>
-        </div>
-      </section>
-
-      <div className="flex items-center justify-end">
-        <button className="cta-primary inline-flex items-center gap-2 rounded-lg px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.22em]">
-          <Save className="h-3.5 w-3.5" aria-hidden="true" />
-          Save settings
-        </button>
-      </div>
     </div>
   );
 }

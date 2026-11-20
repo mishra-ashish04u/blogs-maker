@@ -1,4 +1,4 @@
--- Infocus-IT — Supabase schema
+-- Daily Scam Alert — Supabase schema
 -- Apply via: psql $SUPABASE_DB_URL -f lib/supabase/schema.sql
 -- Or paste into Supabase Studio → SQL Editor.
 
@@ -10,10 +10,11 @@ create table if not exists public.posts (
   slug text unique not null,
   title text not null,
   excerpt text not null,
+  -- Keep in sync with CATEGORIES in lib/site.ts.
   category text not null check (category in (
-    'Security Research', 'Threats', 'How-To', 'Compliance'
+    'Scam Alerts', 'Protection Guides', 'Account Recovery', 'Security Tools'
   )),
-  author text not null default 'Infocus-IT Desk',
+  author text not null default 'Daily Scam Alert Team',
   date text not null,
   read_time int not null default 8,
   cover_image text not null,

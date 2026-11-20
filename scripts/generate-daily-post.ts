@@ -2,7 +2,7 @@
  * Daily blog post generator.
  *
  * Pipeline:
- *   1. Fetch trending cybersec headlines via RSS
+ *   1. Fetch consumer-scam headlines via RSS (filtered for everyday relevance)
  *   2. Pick one that isn't already in our posts table (by source_url or near-duplicate title)
  *   3. Gemini Flash → write the editorial (JSON)
  *   4. Pollinations → generate cover image → upload to Supabase Storage
@@ -17,6 +17,7 @@ import { config } from 'dotenv';
 config({ path: '.env.local' });
 config();
 import { getSupabaseAdmin } from '../lib/supabase/admin';
+import { sanitizePostHtml } from '../lib/html-sanitize';
 import { dispatchDailyBrief } from '../lib/newsletter';
 import { fetchTrendingHeadlines, type Headline } from './lib/rss';
 import { fetchArticleBody } from './lib/article-extractor';
@@ -127,7 +128,8 @@ async function run(trigger: Trigger = 'cron') {
         date: formatDate(),
         read_time: editorial.readTime,
         cover_image: coverUrl,
-        content: editorial.content,
+        // LLM output is derived from scraped third-party pages — never trust it.
+        content: sanitizePostHtml(editorial.content),
         status: 'published',
         source_url: picked.link,
       })

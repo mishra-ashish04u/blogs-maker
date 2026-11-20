@@ -26,6 +26,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl('/perspectives'), changeFrequency: 'daily', priority: 0.8 },
     { url: absoluteUrl('/archives'),   changeFrequency: 'daily',   priority: 0.7 },
     { url: absoluteUrl('/about'),      changeFrequency: 'monthly', priority: 0.5 },
+    { url: absoluteUrl('/submit-tip'), changeFrequency: 'monthly', priority: 0.5 },
+    { url: absoluteUrl('/contact'),    changeFrequency: 'yearly',  priority: 0.4 },
+    { url: absoluteUrl('/ethics'),     changeFrequency: 'yearly',  priority: 0.3 },
+    { url: absoluteUrl('/privacy'),    changeFrequency: 'yearly',  priority: 0.3 },
+    { url: absoluteUrl('/terms'),      changeFrequency: 'yearly',  priority: 0.3 },
   ];
 
   const postRoutes: MetadataRoute.Sitemap = posts.map((p) => ({

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
-import { requireAdmin, validatePostInput } from '@/lib/admin-api';
+import { formatToday, requireAdmin, validatePostInput } from '@/lib/admin-api';
 import { isSupabaseConfigured } from '@/lib/supabase/types';
 
 export const runtime = 'nodejs';
@@ -55,6 +55,22 @@ export async function PUT(
 
   const supabase = getSupabaseAdmin();
 
+  const { data: current } = await supabase
+    .from('posts')
+    .select('id, status')
+    .eq('slug', currentSlug)
+    .maybeSingle();
+  if (!current) {
+    return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+  }
+
+  // A draft that goes live should be dated (and ordered) by its publish day,
+  // not the day the draft was started. There is no published_at column, so
+  // created_at doubles as the publish timestamp used for ordering.
+  const nowIso = new Date().toISOString();
+  const goingLive = current.status !== 'published' && v.data.status === 'published';
+  const publishFields = goingLive ? { date: formatToday(), created_at: nowIso } : {};
+
   // If the slug changed, make sure the new slug isn't already taken by a different row.
   if (v.data.slug !== currentSlug) {
     const { data: conflict } = await supabase
@@ -82,16 +98,17 @@ export async function PUT(
       cover_image: v.data.coverImage,
       content: v.data.content,
       status: v.data.status,
-      updated_at: new Date().toISOString(),
+      updated_at: nowIso,
+      ...publishFields,
     })
-    .eq('slug', currentSlug)
+    .eq('id', current.id)
     .select('id, slug')
     .single();
 
   if (error || !updated) {
     return NextResponse.json(
-      { error: error?.message ?? 'Post not found' },
-      { status: 404 },
+      { error: error?.message ?? 'Update failed' },
+      { status: 500 },
     );
   }
 

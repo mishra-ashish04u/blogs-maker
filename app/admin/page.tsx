@@ -13,9 +13,8 @@ import {
 } from 'lucide-react';
 import { getAllPosts, type BlogPost } from '@/lib/blog-data';
 import { getAdminStatus, formatRelative } from '@/lib/admin-status';
-import { isSupabaseConfigured, type PostRow } from '@/lib/supabase/types';
-import { cookies } from 'next/headers';
-import { createClient } from '@/utils/supabase/server';
+import type { PostRow } from '@/lib/supabase/types';
+import { getSupabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase/admin';
 import { RunNowButton } from '@/components/admin/run-now-button';
 
 export const dynamic = 'force-dynamic';
@@ -35,7 +34,7 @@ async function fetchAdminCatalog(): Promise<{
   retired: number;
   latest: BlogPost | null;
 }> {
-  if (!isSupabaseConfigured()) {
+  if (!isSupabaseAdminConfigured()) {
     const fallback = await getAllPosts();
     return {
       total: fallback.length,
@@ -45,7 +44,8 @@ async function fetchAdminCatalog(): Promise<{
       latest: fallback[0] ?? null,
     };
   }
-  const supabase = createClient(await cookies());
+  // Service role: RLS hides drafts/retired rows from the public key.
+  const supabase = getSupabaseAdmin();
   const { data } = await supabase
     .from('posts')
     .select('*')
@@ -375,7 +375,7 @@ function QuickAction({
       }`}
     >
       <span className="inline-flex items-center gap-2.5">
-        <Icon className={`h-4 w-4 ${primary ? '' : 'text-on-surface-muted'}`} aria-hidden="true" />
+        <Icon className={`h-4 w-4 ${primary ? '' : 'text-on-surface-muted'}`} aria-hidden />
         {label}
       </span>
       <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />

@@ -1,6 +1,10 @@
 /**
- * One-shot: push the static seed posts into Supabase.
+ * One-shot: push the static sample posts into Supabase as DRAFTS.
  * Safe to re-run — upserts on `slug`.
+ *
+ * They are drafts on purpose: the samples are short starting points.
+ * Expand each one in /admin before publishing — thin pages hurt both
+ * search rankings and AdSense approval.
  *
  *   npm run seed
  */
@@ -24,7 +28,7 @@ async function main() {
     read_time: p.readTime,
     cover_image: p.coverImage,
     content: p.content,
-    status: 'published',
+    status: 'draft',
   }));
 
   const { data, error } = await supabase
@@ -37,7 +41,7 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`[seed] ✓ upserted ${data?.length ?? 0} posts.`);
+  console.log(`[seed] ✓ upserted ${data?.length ?? 0} sample posts as DRAFTS (expand + publish them in /admin/posts).`);
   for (const r of data ?? []) console.log('  -', r.slug);
 }
 

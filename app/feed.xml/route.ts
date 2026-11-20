@@ -1,4 +1,5 @@
 import { getAllPosts } from '@/lib/blog-data';
+import { sanitizePostHtml } from '@/lib/html-sanitize';
 import { SITE, absoluteUrl, siteUrl } from '@/lib/seo';
 
 export const revalidate = 300;
@@ -49,7 +50,7 @@ export async function GET() {
       <author>${escapeXml(post.author)}</author>
       <category>${escapeXml(post.category)}</category>
       <description>${escapeXml(post.excerpt)}</description>
-      <content:encoded><![CDATA[${post.content}]]></content:encoded>
+      <content:encoded><![CDATA[${sanitizePostHtml(post.content).replaceAll(']]>', ']]]]><![CDATA[>')}]]></content:encoded>
       <media:thumbnail url="${escapeXml(post.coverImage)}" />
     </item>`;
     })
@@ -67,7 +68,7 @@ export async function GET() {
     <description>${escapeXml(SITE.description)}</description>
     <language>en-us</language>
     <lastBuildDate>${now}</lastBuildDate>
-    <generator>Infocus-IT / Next.js</generator>${items}
+    <generator>${SITE.name} / Next.js</generator>${items}
   </channel>
 </rss>`;
 

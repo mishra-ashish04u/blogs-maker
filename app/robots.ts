@@ -6,14 +6,14 @@ import { absoluteUrl } from '@/lib/seo';
  *
  * Policy:
  *   - All standard crawlers may index the public site.
- *   - /admin, /api, /unsubscribe, /signin are blocked (not content).
+ *   - /admin, /api, /unsubscribe are blocked (not content).
  *   - Major AI crawlers are EXPLICITLY allowed — we want to show up in
  *     ChatGPT / Claude / Perplexity / Google AI Overviews. Flip these
  *     to Disallow if you ever decide to opt out of AI training.
  *   - Sitemap is referenced so crawlers can enumerate posts.
  */
 export default function robots(): MetadataRoute.Robots {
-  const disallow = ['/admin', '/admin/', '/api/', '/unsubscribe', '/signin'];
+  const disallow = ['/admin', '/admin/', '/api/', '/unsubscribe'];
 
   return {
     rules: [

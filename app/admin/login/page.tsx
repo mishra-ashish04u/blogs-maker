@@ -1,7 +1,8 @@
 import { LoginForm } from './login-form';
+import { SITE } from '@/lib/site';
 
 export const metadata = {
-  title: 'Admin Login | Infocus-IT',
+  title: 'Admin Login',
   robots: { index: false, follow: false },
 };
 
@@ -20,14 +21,15 @@ export default async function AdminLoginPage({
       <div className="w-full max-w-sm">
         <div className="text-center">
           <span className="wordmark text-[28px] uppercase leading-none">
-            Infocus-<span className="text-on-bg">IT</span>
+            {SITE.wordmark.lead}
+            <span className="text-on-bg">{SITE.wordmark.accent}</span>
           </span>
-          <p className="mt-6 label-overline">Control Room</p>
+          <p className="mt-6 label-overline">Admin</p>
           <h1 className="mt-2 text-[1.75rem] font-extrabold leading-tight tracking-[-0.025em] text-on-bg">
             Sign in to continue
           </h1>
           <p className="mt-2 text-sm text-on-surface-variant">
-            Enter your admin credentials to access the editorial dashboard.
+            Enter your admin credentials to manage posts.
           </p>
         </div>
 
